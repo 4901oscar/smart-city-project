@@ -1,0 +1,31 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "event_version": { "type": "string", "const": "1.0" },
+    "event_type": {
+      "type": "string",
+      "enum": ["panic.button", "sensor.lpr", "sensor.speed", "sensor.acoustic", "citizen.report"]
+    },
+    "event_id": { "type": "string", "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$" },
+    "producer": { "type": "string", "enum": ["artillery", "python-sim", "kafka-cli"] },
+    "source": { "type": "string", "const": "simulated" },
+    "correlation_id": { "type": "string", "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$" },
+    "trace_id": { "type": "string", "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$" },
+    "timestamp": { "type": "string", "format": "date-time" },
+    "partition_key": { "type": "string" },
+    "geo": {
+      "type": "object",
+      "properties": {
+        "zone": { "type": "string" },
+        "lat": { "type": "number" },
+        "lon": { "type": "number" }
+      },
+      "required": ["zone", "lat", "lon"]
+    },
+    "severity": { "type": "string", "enum": ["info", "warning", "critical"] },
+    "payload": { "type": "object" } 
+  },
+  "required": ["event_version", "event_type", "event_id", "producer", "source", "correlation_id", "trace_id", "timestamp", "partition_key", "geo", "severity", "payload"],
+  "additionalProperties": false
+}
