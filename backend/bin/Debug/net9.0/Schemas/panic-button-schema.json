@@ -1,0 +1,9 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "tipo_de_alerta": { "type": "string", "enum": ["panico", "emergencia", "incendio"] }
+  },
+  "required": ["tipo_de_alerta"],
+  "additionalProperties": false
+}

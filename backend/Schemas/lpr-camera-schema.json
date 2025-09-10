@@ -1,0 +1,10 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "placa_vehicular": { "type": "string", "pattern": "^[A-Z]{3}\\d{3}$" },  
+    "velocidad_estimada": { "type": "number", "minimum": 0 }
+  },
+  "required": ["placa_vehicular", "velocidad_estimada"],
+  "additionalProperties": false
+}
