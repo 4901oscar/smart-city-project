@@ -1,9 +1,26 @@
+<<<<<<< HEAD
+=======
+using backend.Interfaces;
+using backend.Services;
+
+>>>>>>> 596a44f (Servicios e interfaces)
 var builder = WebApplication.CreateBuilder(args);
 
 // Agrega servicios al contenedor
 builder.Services.AddControllers();  // Habilita los controladores de API
 builder.Services.AddSingleton<EventValidatorService>();
 builder.Services.AddSingleton<KafkaProducerService>();
+<<<<<<< HEAD
+=======
+builder.Services.AddSingleton<IKafkaProducerService, KafkaProducerService>();
+builder.Services.AddSingleton<IkafkaConsumerService, KafkaConsumerService>();
+builder.Services.AddSingleton<IEventValidatorService, EventValidatorService>();
+builder.Services.AddSingleton<IEventEnrichmentService, EventEnrichmentService>();
+builder.Services.AddSingleton<IEventRepository, EventRepository>();
+builder.Services.AddSingleton<IRedisCorrelationService, RedisCorrelationService>();
+builder.Services.AddSingleton<IElasticIndexerService, ElasticIndexerService>();
+builder.Services.AddSingleton<IAirflowTasksService, AirflowTasksService>();
+>>>>>>> 596a44f (Servicios e interfaces)
 
 // Configura Swagger (clave para activarlo)
 builder.Services.AddEndpointsApiExplorer();  // Explora los endpoints

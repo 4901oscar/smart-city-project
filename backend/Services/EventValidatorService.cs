@@ -1,9 +1,21 @@
+<<<<<<< HEAD
 using NJsonSchema;
 using Microsoft.Extensions.Configuration;
 using System.IO;
 using Newtonsoft.Json.Linq;
 
 public class EventValidatorService
+=======
+//Valida el Envelope y el payload segun su tipo
+
+using NJsonSchema;
+using Microsoft.Extensions.Configuration;
+using System.IO;
+using backend.Interfaces;
+using Newtonsoft.Json.Linq;
+
+public class EventValidatorService : IEventValidatorService
+>>>>>>> 596a44f (Servicios e interfaces)
 {
     private readonly JsonSchema _envelopeSchema;
     private readonly Dictionary<string, JsonSchema> _payloadSchemas;

@@ -8,8 +8,16 @@
 
   <ItemGroup>
     <PackageReference Include="Confluent.Kafka" Version="2.11.1" />
+<<<<<<< HEAD
     <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.9" />
     <PackageReference Include="NJsonSchema" Version="11.4.0" />
+=======
+    <PackageReference Include="Elasticsearch.Net" Version="7.17.5" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" Version="9.0.9" />
+    <PackageReference Include="NJsonSchema" Version="11.4.0" />
+    <PackageReference Include="Npgsql" Version="9.0.3" />
+    <PackageReference Include="StackExchange.Redis" Version="2.9.17" />
+>>>>>>> 596a44f (Servicios e interfaces)
     <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.4" />
   </ItemGroup>
 
