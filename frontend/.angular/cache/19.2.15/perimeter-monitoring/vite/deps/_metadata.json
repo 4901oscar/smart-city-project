@@ -1,0 +1,34 @@
+{
+  "hash": "324dc161",
+  "configHash": "790fe601",
+  "lockfileHash": "2de6af57",
+  "browserHash": "d065e567",
+  "optimized": {
+    "@angular/core": {
+      "src": "../../../../../../node_modules/@angular/core/fesm2022/core.mjs",
+      "file": "@angular_core.js",
+      "fileHash": "1f1b2d71",
+      "needsInterop": false
+    },
+    "@angular/platform-browser": {
+      "src": "../../../../../../node_modules/@angular/platform-browser/fesm2022/platform-browser.mjs",
+      "file": "@angular_platform-browser.js",
+      "fileHash": "51e4e04e",
+      "needsInterop": false
+    },
+    "leaflet": {
+      "src": "../../../../../../node_modules/leaflet/dist/leaflet-src.js",
+      "file": "leaflet.js",
+      "fileHash": "b64d2443",
+      "needsInterop": true
+    }
+  },
+  "chunks": {
+    "chunk-USNC3OKN": {
+      "file": "chunk-USNC3OKN.js"
+    },
+    "chunk-3OV72XIM": {
+      "file": "chunk-3OV72XIM.js"
+    }
+  }
+}
