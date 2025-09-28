@@ -1,21 +1,13 @@
-<<<<<<< HEAD
 using NJsonSchema;
-using Microsoft.Extensions.Configuration;
 using System.IO;
 using Newtonsoft.Json.Linq;
+using Microsoft.Extensions.Configuration;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace SmartCityBackend.Services;
 
 public class EventValidatorService
-=======
-//Valida el Envelope y el payload segun su tipo
-
-using NJsonSchema;
-using Microsoft.Extensions.Configuration;
-using System.IO;
-using backend.Interfaces;
-using Newtonsoft.Json.Linq;
-
-public class EventValidatorService : IEventValidatorService
->>>>>>> 596a44f (Servicios e interfaces)
 {
     private readonly JsonSchema _envelopeSchema;
     private readonly Dictionary<string, JsonSchema> _payloadSchemas;
@@ -33,18 +25,46 @@ public class EventValidatorService : IEventValidatorService
         };
     }
 
-    public bool Validate(JObject payload)
+    public bool Validate(JObject? payload) => ValidateDetailed(payload).isValid;
+
+    public (bool isValid, List<string> errors) ValidateDetailed(JObject? payload)
     {
+        var errors = new List<string>();
+        if (payload == null)
+        {
+            errors.Add("Payload is null");
+            return (false, errors);
+        }
+
         var envelopeErrors = _envelopeSchema.Validate(payload);
-        if (envelopeErrors.Any()) return false;
+        if (envelopeErrors.Any())
+        {
+            errors.AddRange(envelopeErrors.Select(e => $"Envelope: {e.Path} -> {e.Kind} ({e})"));
+        }
 
-        string eventType = payload["event_type"]?.ToString();
-        if (string.IsNullOrEmpty(eventType) || !_payloadSchemas.ContainsKey(eventType)) return false;
+        string? eventType = payload["event_type"]?.ToString();
+        if (string.IsNullOrEmpty(eventType))
+        {
+            errors.Add("event_type missing or empty");
+        }
+        else if (!_payloadSchemas.ContainsKey(eventType))
+        {
+            errors.Add($"No payload schema for event_type '{eventType}'");
+        }
 
-        JObject payloadData = payload["payload"] as JObject;
-        if (payloadData == null) return false;
+        JObject? payloadData = payload["payload"] as JObject;
+        if (payloadData == null)
+        {
+            errors.Add("payload object missing or not an object");
+        }
+        else if (!string.IsNullOrEmpty(eventType) && _payloadSchemas.ContainsKey(eventType))
+        {
+            var payloadErrors = _payloadSchemas[eventType].Validate(payloadData);
+            errors.AddRange(payloadErrors.Select(e => $"Payload: {e.Path} -> {e.Kind} ({e})"));
+        }
 
-        var payloadErrors = _payloadSchemas[eventType].Validate(payloadData);
-        return !payloadErrors.Any();
+        var ok = !errors.Any();
+        Console.WriteLine(ok ? "Validation successful" : $"Validation failed: {string.Join(" | ", errors)}");
+        return (ok, errors);
     }
 }

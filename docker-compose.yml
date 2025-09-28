@@ -1,0 +1,63 @@
+version: '3.8'
+
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    hostname: zookeeper
+    container_name: zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    hostname: kafka
+    container_name: kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+
+# postgres (DESHABILITADO - usando Neon). Si deseas usar local, descomenta este bloque.
+#  postgres:
+#    image: postgres:15
+#    container_name: postgres
+#    restart: always
+#    environment:
+#      POSTGRES_DB: ${PGDATABASE}
+#      POSTGRES_USER: ${PGUSER}
+#      POSTGRES_PASSWORD: ${PGPASSWORD}
+#    ports:
+#      - "5432:5432"
+#    volumes:
+#      - postgres_data:/var/lib/postgresql/data
+#    command: -c ssl=off
+
+  backend:
+    build: ./backend
+    container_name: backend
+    ports:
+      - "5000:8080"
+    depends_on:
+      - kafka
+      # Si solo usas Neon puedes comentar postgres arriba
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Host=${PGHOST};Database=${PGDATABASE};Username=${PGUSER};Password=${PGPASSWORD};SSL Mode=Require;Timeout=15;Command Timeout=30"
+      Kafka__BootstrapServers: kafka:29092
+    restart: always
+
+# Volumen para Postgres local (comentado porque ahora usamos Neon)
+#volumes:
+#  postgres_data:

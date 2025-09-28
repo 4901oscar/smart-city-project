@@ -1,51 +1,25 @@
 {
   "format": 1,
   "restore": {
-<<<<<<< HEAD
-    "C:\\smart-city-project\\backend\\backend.csproj": {}
+    "C:\\Users\\oscar\\OneDrive\\Desktop\\smart-city-project\\backend\\backend.csproj": {}
   },
   "projects": {
-    "C:\\smart-city-project\\backend\\backend.csproj": {
+    "C:\\Users\\oscar\\OneDrive\\Desktop\\smart-city-project\\backend\\backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\smart-city-project\\backend\\backend.csproj",
+        "projectUniqueName": "C:\\Users\\oscar\\OneDrive\\Desktop\\smart-city-project\\backend\\backend.csproj",
         "projectName": "backend",
-        "projectPath": "C:\\smart-city-project\\backend\\backend.csproj",
+        "projectPath": "C:\\Users\\oscar\\OneDrive\\Desktop\\smart-city-project\\backend\\backend.csproj",
         "packagesPath": "C:\\Users\\oscar\\.nuget\\packages\\",
-        "outputPath": "C:\\smart-city-project\\backend\\obj\\",
+        "outputPath": "C:\\Users\\oscar\\OneDrive\\Desktop\\smart-city-project\\backend\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\oscar\\AppData\\Roaming\\NuGet\\NuGet.Config"
-=======
-    "C:\\Users\\danie\\Downloads\\smart-city-project-main\\smart-city-project-main\\backend\\backend.csproj": {}
-  },
-  "projects": {
-    "C:\\Users\\danie\\Downloads\\smart-city-project-main\\smart-city-project-main\\backend\\backend.csproj": {
-      "version": "1.0.0",
-      "restore": {
-        "projectUniqueName": "C:\\Users\\danie\\Downloads\\smart-city-project-main\\smart-city-project-main\\backend\\backend.csproj",
-        "projectName": "backend",
-        "projectPath": "C:\\Users\\danie\\Downloads\\smart-city-project-main\\smart-city-project-main\\backend\\backend.csproj",
-        "packagesPath": "C:\\Users\\danie\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\danie\\Downloads\\smart-city-project-main\\smart-city-project-main\\backend\\obj\\",
-        "projectStyle": "PackageReference",
-        "fallbackFolders": [
-          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-        ],
-        "configFilePaths": [
-          "C:\\Users\\danie\\AppData\\Roaming\\NuGet\\NuGet.Config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
-          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
->>>>>>> 596a44f (Servicios e interfaces)
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
-<<<<<<< HEAD
-=======
-          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
->>>>>>> 596a44f (Servicios e interfaces)
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -72,37 +46,35 @@
           "dependencies": {
             "Confluent.Kafka": {
               "target": "Package",
-              "version": "[2.11.1, )"
+              "version": "[2.3.0, )"
             },
-<<<<<<< HEAD
-=======
-            "Elasticsearch.Net": {
+            "Microsoft.EntityFrameworkCore": {
               "target": "Package",
-              "version": "[7.17.5, )"
+              "version": "[9.0.0-preview.1.24081.2, )"
             },
->>>>>>> 596a44f (Servicios e interfaces)
-            "Microsoft.AspNetCore.OpenApi": {
+            "Microsoft.EntityFrameworkCore.Design": {
               "target": "Package",
-              "version": "[9.0.9, )"
+              "version": "[9.0.0-preview.1.24081.2, )"
+            },
+            "Microsoft.EntityFrameworkCore.Relational": {
+              "target": "Package",
+              "version": "[9.0.0-preview.1.24081.2, )"
             },
             "NJsonSchema": {
               "target": "Package",
-              "version": "[11.4.0, )"
+              "version": "[10.9.0, )"
             },
-<<<<<<< HEAD
-=======
-            "Npgsql": {
+            "Newtonsoft.Json": {
               "target": "Package",
-              "version": "[9.0.3, )"
+              "version": "[13.0.3, )"
             },
-            "StackExchange.Redis": {
+            "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",
-              "version": "[2.9.17, )"
+              "version": "[9.0.0-preview.1, )"
             },
->>>>>>> 596a44f (Servicios e interfaces)
             "Swashbuckle.AspNetCore": {
               "target": "Package",
-              "version": "[9.0.4, )"
+              "version": "[6.5.0, )"
             }
           },
           "imports": [
@@ -124,11 +96,7 @@
               "privateAssets": "all"
             }
           },
-<<<<<<< HEAD
           "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.305/PortableRuntimeIdentifierGraph.json"
-=======
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.304/PortableRuntimeIdentifierGraph.json"
->>>>>>> 596a44f (Servicios e interfaces)
         }
       }
     }

@@ -8,7 +8,7 @@
       "enum": ["panic.button", "sensor.lpr", "sensor.speed", "sensor.acoustic", "citizen.report"]
     },
     "event_id": { "type": "string", "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$" },
-    "producer": { "type": "string", "enum": ["artillery", "python-sim", "kafka-cli"] },
+    "producer": { "type": "string", "enum": ["artillery", "python-sim", "kafka-cli", "js-sim"] },
     "source": { "type": "string", "const": "simulated" },
     "correlation_id": { "type": "string", "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$" },
     "trace_id": { "type": "string", "pattern": "^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$" },
@@ -24,7 +24,7 @@
       "required": ["zone", "lat", "lon"]
     },
     "severity": { "type": "string", "enum": ["info", "warning", "critical"] },
-    "payload": { "type": "object" } 
+    "payload": { "type": "object" }
   },
   "required": ["event_version", "event_type", "event_id", "producer", "source", "correlation_id", "trace_id", "timestamp", "partition_key", "geo", "severity", "payload"],
   "additionalProperties": false
