@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using SmartCityBackend.Services;
-using Microsoft.EntityFrameworkCore; // Asegura este using para Migrate
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,7 +18,25 @@ builder.Services.AddSingleton<KafkaProducerService>();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Smart City API", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo 
+    { 
+        Title = "Smart City Events API", 
+        Version = "v1",
+        Description = "API para el sistema de eventos de Smart City. Permite recibir y procesar diferentes tipos de eventos urbanos.",
+        Contact = new OpenApiContact
+        {
+            Name = "Smart City Team",
+            Email = "dev@smartcity.com"
+        }
+    });
+    
+    // Habilitar comentarios XML si existe el archivo
+    var xmlFile = $"{System.Reflection.Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    var xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    if (File.Exists(xmlPath))
+    {
+        c.IncludeXmlComments(xmlPath);
+    }
 });
 
 var app = builder.Build();
@@ -38,57 +56,33 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
 
-// Intentar aplicar migraciones; si no existen (porque no creaste ninguna) usar EnsureCreated como fallback SOLO dev/local
+// Verificar conexión a la base de datos
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<EventDbContext>();
     try
     {
-        context.Database.Migrate();
+        // Verificar si podemos conectarnos a la base de datos
+        var canConnect = context.Database.CanConnect();
+        if (canConnect)
+        {
+            Console.WriteLine("[INFO] ✓ Conexión a la base de datos establecida correctamente");
+            
+            // Contar eventos existentes
+            var eventCount = context.Events.Count();
+            Console.WriteLine($"[INFO] Total de eventos en la base de datos: {eventCount}");
+        }
+        else
+        {
+            Console.WriteLine("[WARN] ⚠ No se pudo conectar a la base de datos");
+            Console.WriteLine("[WARN] Verifica tu conexión a Neon o ejecuta: .\\init-database.ps1");
+        }
     }
     catch (Exception ex)
     {
-        Console.WriteLine($"[WARN] Migrate falló ({ex.Message}). Usando EnsureCreated como fallback.");
-        try
-        {
-            if (!context.Database.EnsureCreated())
-            {
-                Console.WriteLine("[INFO] EnsureCreated indicó que la BD ya existe.");
-            }
-        }
-        catch (Exception inner)
-        {
-            Console.WriteLine($"[ERROR] EnsureCreated también falló: {inner.Message}. Intentando crear tabla Events manualmente.");
-            try
-            {
-                context.Database.ExecuteSqlRaw(@"CREATE TABLE IF NOT EXISTS ""Events"" (
-    ""Id"" SERIAL PRIMARY KEY,
-    ""EventType"" TEXT NULL,
-    ""Payload"" TEXT NULL,
-    ""Timestamp"" TIMESTAMPTZ NOT NULL
-);");
-                Console.WriteLine("[INFO] Tabla Events verificada/creada manualmente.");
-            }
-            catch (Exception ddlEx)
-            {
-                Console.WriteLine($"[FATAL] No se pudo crear la tabla Events: {ddlEx.Message}");
-            }
-        }
-    }
-    // Si no hay migraciones para el modelo, aseguramos la tabla Events explícitamente.
-    try
-    {
-        context.Database.ExecuteSqlRaw(@"CREATE TABLE IF NOT EXISTS ""Events"" (
-    ""Id"" SERIAL PRIMARY KEY,
-    ""EventType"" TEXT NULL,
-    ""Payload"" TEXT NULL,
-    ""Timestamp"" TIMESTAMPTZ NOT NULL
-);");
-        Console.WriteLine("[INFO] Verificación/creación explícita de tabla Events completada.");
-    }
-    catch (Exception finalDdlEx)
-    {
-        Console.WriteLine($"[ERROR] Verificación de tabla Events falló: {finalDdlEx.Message}");
+        Console.WriteLine($"[ERROR] ✗ Error conectando a la base de datos: {ex.Message}");
+        Console.WriteLine("[INFO] Asegúrate de que las tablas estén creadas en Neon");
+        Console.WriteLine("[INFO] Ejecuta el script: .\\init-database.ps1");
     }
 }
 

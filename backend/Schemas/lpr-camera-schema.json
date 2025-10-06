@@ -2,9 +2,12 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
-    "placa_vehicular": { "type": "string", "pattern": "^[A-Z]{3}\\d{3}$" },
-    "velocidad_estimada": { "type": "number", "minimum": 0 }
+    "placa_vehicular": { "type": "string" },
+    "velocidad_estimada": { "type": "number", "minimum": 0 },
+    "modelo_vehiculo": { "type": "string" },
+    "color_vehiculo": { "type": "string" },
+    "ubicacion_sensor": { "type": "string" }
   },
-  "required": ["placa_vehicular", "velocidad_estimada"],
+  "required": ["placa_vehicular", "velocidad_estimada", "modelo_vehiculo", "color_vehiculo", "ubicacion_sensor"],
   "additionalProperties": false
 }

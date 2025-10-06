@@ -8,19 +8,100 @@ const ZONA_10 = { zone: 'Zona 10', lat: 14.6091, lon: -90.5252 };
 // Tipos de eventos (basado en proyecto)
 const EVENT_TYPES = ['panic.button', 'sensor.lpr', 'sensor.speed', 'sensor.acoustic', 'citizen.report'];
 
-// Payloads simulados
+// Nombres y modelos de vehículos para simulación realista
+const PLACAS_PREFIJOS = ['P', 'C', 'A', 'M', 'O'];
+const MODELOS_VEHICULOS = ['Toyota Corolla', 'Honda Civic', 'Mazda 3', 'Nissan Sentra', 'Hyundai Elantra', 'Ford Mustang', 'Chevrolet Spark'];
+const COLORES_VEHICULOS = ['blanco', 'negro', 'gris', 'rojo', 'azul', 'plateado'];
+const SENSORES_LPR = ['Av. Reforma', '6ta Avenida', 'Blvd. Los Próceres', 'Diagonal 6', 'Calzada Roosevelt'];
+const DIRECCIONES = ['Norte', 'Sur', 'Este', 'Oeste', 'Noreste', 'Suroeste'];
+const DISPOSITIVOS_PANIC = ['BTN-Z10-001', 'BTN-Z10-002', 'BTN-Z10-003', 'KIOSK-Z10-01', 'APP-MOBILE-001'];
+const USER_CONTEXTS = ['movil', 'quiosco', 'web'];
+const UBICACIONES_CIUDADANO = ['6ta Avenida y 12 calle', 'Plaza central', 'Parque zona 10', 'Centro comercial', 'Avenida reforma'];
+
+// Payloads simulados con datos completos según schemas
 function generatePayload(type) {
   switch (type) {
     case 'panic.button':
-      return { tipo_de_alerta: ['panico', 'emergencia', 'incendio'][Math.floor(Math.random() * 3)] };
+      const tipoAlerta = ['panico', 'emergencia', 'incendio'][Math.floor(Math.random() * 3)];
+      return {
+        tipo_de_alerta: tipoAlerta,
+        identificador_dispositivo: DISPOSITIVOS_PANIC[Math.floor(Math.random() * DISPOSITIVOS_PANIC.length)],
+        user_context: USER_CONTEXTS[Math.floor(Math.random() * USER_CONTEXTS.length)]
+      };
+      
     case 'sensor.lpr':
-      return { placa_vehicular: 'ABC' + Math.floor(Math.random() * 1000), velocidad_estimada: Math.floor(Math.random() * 100) + 50 };
+      const prefijo = PLACAS_PREFIJOS[Math.floor(Math.random() * PLACAS_PREFIJOS.length)];
+      const numeros = Math.floor(Math.random() * 1000).toString().padStart(3, '0');
+      const letras = String.fromCharCode(65 + Math.floor(Math.random() * 26)) + 
+                     String.fromCharCode(65 + Math.floor(Math.random() * 26));
+      return {
+        placa_vehicular: `${prefijo}-${numeros}${letras}`,
+        velocidad_estimada: Math.floor(Math.random() * 80) + 30, // 30-110 km/h
+        modelo_vehiculo: MODELOS_VEHICULOS[Math.floor(Math.random() * MODELOS_VEHICULOS.length)],
+        color_vehiculo: COLORES_VEHICULOS[Math.floor(Math.random() * COLORES_VEHICULOS.length)],
+        ubicacion_sensor: SENSORES_LPR[Math.floor(Math.random() * SENSORES_LPR.length)]
+      };
+      
     case 'sensor.speed':
-      return { velocidad: Math.floor(Math.random() * 120) + 20 };
+      return {
+        velocidad_detectada: Math.floor(Math.random() * 100) + 20, // 20-120 km/h
+        sensor_id: `SPEED-Z10-${Math.floor(Math.random() * 10).toString().padStart(3, '0')}`,
+        direccion: DIRECCIONES[Math.floor(Math.random() * DIRECCIONES.length)]
+      };
+      
     case 'sensor.acoustic':
-      return { sound_type: 'disparo', decibels: Math.floor(Math.random() * 100) + 80 };
+      const sonidos = ['disparo', 'explosion', 'vidrio_roto'];
+      const tipoSonido = sonidos[Math.floor(Math.random() * sonidos.length)];
+      let decibeles, probabilidad;
+      
+      if (tipoSonido === 'disparo') {
+        decibeles = Math.floor(Math.random() * 30) + 140; // 140-170 dB
+        probabilidad = 0.6 + Math.random() * 0.35; // 60-95%
+      } else if (tipoSonido === 'explosion') {
+        decibeles = Math.floor(Math.random() * 40) + 160; // 160-200 dB
+        probabilidad = 0.7 + Math.random() * 0.25; // 70-95%
+      } else {
+        decibeles = Math.floor(Math.random() * 30) + 85; // 85-115 dB
+        probabilidad = 0.5 + Math.random() * 0.4; // 50-90%
+      }
+      
+      return {
+        tipo_sonido_detectado: tipoSonido,
+        nivel_decibeles: decibeles,
+        probabilidad_evento_critico: Math.round(probabilidad * 100) / 100
+      };
+      
     case 'citizen.report':
-      return { tipo_evento: 'accidente', mensaje_descriptivo: 'Accidente en intersección' };
+      const tiposEvento = ['accidente', 'incendio', 'altercado'];
+      const tipoEvento = tiposEvento[Math.floor(Math.random() * tiposEvento.length)];
+      const mensajes = {
+        'accidente': [
+          'Choque entre dos vehículos',
+          'Motociclista accidentado',
+          'Vehículo volcado en la vía',
+          'Accidente con heridos'
+        ],
+        'incendio': [
+          'Humo saliendo de edificio',
+          'Fuego en contenedor de basura',
+          'Incendio en vehículo estacionado',
+          'Llamas visibles en local comercial'
+        ],
+        'altercado': [
+          'Personas discutiendo violentamente',
+          'Pelea en vía pública',
+          'Disturbio cerca de bar',
+          'Grupo causando desorden'
+        ]
+      };
+      
+      return {
+        tipo_evento: tipoEvento,
+        mensaje_descriptivo: mensajes[tipoEvento][Math.floor(Math.random() * mensajes[tipoEvento].length)],
+        ubicacion_aproximada: UBICACIONES_CIUDADANO[Math.floor(Math.random() * UBICACIONES_CIUDADANO.length)],
+        origen: ['usuario', 'app', 'punto_fisico'][Math.floor(Math.random() * 3)]
+      };
+      
     default:
       return {};
   }
@@ -30,6 +111,25 @@ function generatePayload(type) {
 async function sendEvent() {
   const eventType = EVENT_TYPES[Math.floor(Math.random() * EVENT_TYPES.length)];
   const payload = generatePayload(eventType);
+
+  // Asignar severidad basada en el tipo de evento y datos del payload
+  let severity = 'info';
+  
+  if (eventType === 'panic.button') {
+    severity = payload.tipo_de_alerta === 'panico' || payload.tipo_de_alerta === 'incendio' ? 'critical' : 'warning';
+  } else if (eventType === 'sensor.lpr') {
+    severity = payload.velocidad_estimada > 100 ? 'critical' : payload.velocidad_estimada > 70 ? 'warning' : 'info';
+  } else if (eventType === 'sensor.speed') {
+    severity = payload.velocidad_detectada > 80 ? 'critical' : payload.velocidad_detectada > 60 ? 'warning' : 'info';
+  } else if (eventType === 'sensor.acoustic') {
+    if (payload.tipo_sonido_detectado === 'disparo' || payload.tipo_sonido_detectado === 'explosion') {
+      severity = 'critical';
+    } else if (payload.probabilidad_evento_critico > 0.7) {
+      severity = 'warning';
+    }
+  } else if (eventType === 'citizen.report') {
+    severity = payload.tipo_evento === 'incendio' ? 'critical' : payload.tipo_evento === 'accidente' ? 'warning' : 'info';
+  }
 
   const eventData = {
     event_version: '1.0',
@@ -42,18 +142,19 @@ async function sendEvent() {
     timestamp: new Date().toISOString(),
     partition_key: 'zone_10',
     geo: ZONA_10,
-    severity: ['info', 'warning', 'critical'][Math.floor(Math.random() * 3)],
+    severity: severity,
     payload: payload
   };
 
   try {
     const response = await axios.post(BACKEND_URL, eventData);
-    console.log('Evento enviado:', response.data);
+    console.log(`✓ [${eventType}] Severity: ${severity} - ${response.data}`);
   } catch (error) {
-    console.error('Error al enviar evento:', error.response?.data || error.message);
+    console.error('✗ Error al enviar evento:', error.response?.data || error.message);
   }
 }
 
-// Simular eventos cada 5 segundos
-setInterval(sendEvent, 5000);
-console.log('Producer iniciado - Enviando eventos simulados a Zona 10...');
+// Simular eventos cada 3 segundos para ver más variedad
+setInterval(sendEvent, 3000);
+console.log('🚀 Producer iniciado - Enviando eventos simulados con datos completos a Zona 10...');
+console.log('📊 Generando eventos: panic.button, sensor.lpr, sensor.speed, sensor.acoustic, citizen.report\n');

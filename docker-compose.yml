@@ -29,20 +29,21 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
 
-# postgres (DESHABILITADO - usando Neon). Si deseas usar local, descomenta este bloque.
-#  postgres:
-#    image: postgres:15
-#    container_name: postgres
-#    restart: always
-#    environment:
-#      POSTGRES_DB: ${PGDATABASE}
-#      POSTGRES_USER: ${PGUSER}
-#      POSTGRES_PASSWORD: ${PGPASSWORD}
-#    ports:
-#      - "5432:5432"
-#    volumes:
-#      - postgres_data:/var/lib/postgresql/data
-#    command: -c ssl=off
+  # PostgreSQL local deshabilitado - usando Neon Cloud
+  # Si quieres usar PostgreSQL local, descomenta este bloque
+  #postgres:
+  #  image: postgres:15
+  #  container_name: postgres
+  #  restart: always
+  #  environment:
+  #    POSTGRES_DB: SmartCitiesBD
+  #    POSTGRES_USER: postgres
+  #    POSTGRES_PASSWORD: supersecretpassword
+  #  ports:
+  #    - "5432:5432"
+  #  volumes:
+  #    - postgres_data:/var/lib/postgresql/data
+  #  command: -c ssl=off
 
   backend:
     build: ./backend
@@ -51,13 +52,12 @@ services:
       - "5000:8080"
     depends_on:
       - kafka
-      # Si solo usas Neon puedes comentar postgres arriba
     environment:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__DefaultConnection: "Host=${PGHOST};Database=${PGDATABASE};Username=${PGUSER};Password=${PGPASSWORD};SSL Mode=Require;Timeout=15;Command Timeout=30"
       Kafka__BootstrapServers: kafka:29092
     restart: always
 
-# Volumen para Postgres local (comentado porque ahora usamos Neon)
+# Volumen para PostgreSQL local (deshabilitado)
 #volumes:
 #  postgres_data:

@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>backend</name>
+    </assembly>
+    <members>
+        <member name="M:SmartCityBackend.Controllers.HealthController.Get">
+            <summary>
+            Endpoint de liveness/readiness para health checks
+            </summary>
+            <remarks>
+            Retorna el estado del servicio. Puede ser usado por Kubernetes, Docker Compose u orquestadores.
+            </remarks>
+            <returns>Estado del servicio</returns>
+            <response code="200">Servicio operativo</response>
+        </member>
+        <member name="M:SmartCityBackend.Controllers.SchemaController.Get">
+            <summary>
+            Retorna el esquema JSON canónico actual (v1.0)
+            </summary>
+            <remarks>
+            Devuelve el JSON Schema Draft 2020-12 que define el formato canónico de eventos.
+            Los productores DEBEN validar contra este esquema antes de enviar eventos.
+            </remarks>
+            <returns>JSON Schema del evento canónico v1.0</returns>
+            <response code="200">Esquema canónico retornado exitosamente</response>
+            <response code="500">Error al leer el archivo de esquema</response>
+        </member>
+        <member name="T:SmartCityBackend.Models.EventEnvelope">
+            <summary>
+            Envelope que contiene todos los eventos del sistema Smart City
+            </summary>
+        </member>
+        <member name="P:SmartCityBackend.Models.EventEnvelope.EventVersion">
+            <summary>
+            Versión del evento (debe ser "1.0")
+            </summary>
+        </member>
+        <member name="P:SmartCityBackend.Models.EventEnvelope.EventType">
+            <summary>
+            Tipo de evento que se está enviando
+            </summary>
+        </member>
+        <member name="P:SmartCityBackend.Models.EventEnvelope.EventId">
+            <summary>
+            Identificador único del evento (UUID)
+            </summary>
+        </member>
+        <member name="P:SmartCityBackend.Models.EventEnvelope.Producer">
+            <summary>
+            Productor del evento
+            </summary>
+        </member>
+        <member name="P:SmartCityBackend.Models.EventEnvelope.Source">
+            <summary>
+            Fuente del evento (debe ser "simulated")
+            </summary>
+        </member>
+        <member name="P:SmartCityBackend.Models.EventEnvelope.CorrelationId">
+            <summary>
+            ID de correlación para trazabilidad (UUID)
+            </summary>
+        </member>
+        <member name="P:SmartCityBackend.Models.EventEnvelope.TraceId">
+            <summary>
+            ID de trazabilidad (UUID)
+            </summary>
+        </member>
+        <member name="P:SmartCityBackend.Models.EventEnvelope.Timestamp">
+            <summary>
+            Timestamp del evento en formato ISO 8601
+            </summary>
+        </member>
+        <member name="P:SmartCityBackend.Models.EventEnvelope.PartitionKey">
+            <summary>
+            Clave de partición para Kafka
+            </summary>
+        </member>
+        <member name="P:SmartCityBackend.Models.EventEnvelope.Geo">
+            <summary>
+            Información geográfica del evento
+            </summary>
+        </member>
+        <member name="P:SmartCityBackend.Models.EventEnvelope.Severity">
+            <summary>
+            Severidad del evento
+            </summary>
+        </member>
+        <member name="P:SmartCityBackend.Models.EventEnvelope.Payload">
+            <summary>
+            Payload específico según el tipo de evento
+            </summary>
+        </member>
+        <member name="T:SmartCityBackend.Models.EventType">
+            <summary>
+            Tipos de eventos disponibles en el sistema
+            </summary>
+        </member>
+        <member name="T:SmartCityBackend.Models.EventProducer">
+            <summary>
+            Productores de eventos disponibles
+            </summary>
+        </member>
+        <member name="T:SmartCityBackend.Models.EventSeverity">
+            <summary>
+            Niveles de severidad del evento
+            </summary>
+        </member>
+        <member name="T:SmartCityBackend.Models.GeoLocation">
+            <summary>
+            Información de ubicación geográfica
+            </summary>
+        </member>
+        <member name="P:SmartCityBackend.Models.GeoLocation.Zone">
+            <summary>
+            Zona geográfica (ej: "Zona 10")
+            </summary>
+        </member>
+        <member name="P:SmartCityBackend.Models.GeoLocation.Lat">
+            <summary>
+            Latitud en grados decimales
+            </summary>
+        </member>
+        <member name="P:SmartCityBackend.Models.GeoLocation.Lon">
+            <summary>
+            Longitud en grados decimales
+            </summary>
+        </member>
+    </members>
+</doc>

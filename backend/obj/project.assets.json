@@ -5061,11 +5061,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\oscar\\OneDrive\\Desktop\\smart-city-project\\backend\\backend.csproj",
+      "projectUniqueName": "C:\\smart-city-project\\backend\\backend.csproj",
       "projectName": "backend",
-      "projectPath": "C:\\Users\\oscar\\OneDrive\\Desktop\\smart-city-project\\backend\\backend.csproj",
+      "projectPath": "C:\\smart-city-project\\backend\\backend.csproj",
       "packagesPath": "C:\\Users\\oscar\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\oscar\\OneDrive\\Desktop\\smart-city-project\\backend\\obj\\",
+      "outputPath": "C:\\smart-city-project\\backend\\obj\\",
       "projectStyle": "PackageReference",
       "configFilePaths": [
         "C:\\Users\\oscar\\AppData\\Roaming\\NuGet\\NuGet.Config"

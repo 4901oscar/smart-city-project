@@ -2,9 +2,11 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "type": "object",
   "properties": {
-    "tipo_evento": { "type": "string" },
-    "mensaje_descriptivo": { "type": "string" }
+    "tipo_evento": { "type": "string", "enum": ["accidente", "incendio", "altercado"] },
+    "mensaje_descriptivo": { "type": "string" },
+    "ubicacion_aproximada": { "type": "string" },
+    "origen": { "type": "string", "enum": ["usuario", "app", "punto_fisico"] }
   },
-  "required": ["tipo_evento", "mensaje_descriptivo"],
+  "required": ["tipo_evento", "mensaje_descriptivo", "ubicacion_aproximada", "origen"],
   "additionalProperties": false
 }

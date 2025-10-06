@@ -55,12 +55,25 @@ public class EventsController : ControllerBase
             return StatusCode(502, new { message = "Error enviando a Kafka", detail = kex.Message });
         }
 
-        // Guardar en Postgres
+        // Guardar en Postgres con todos los campos del schema
         var newEvent = new Event
         {
+            EventId = Guid.Parse(eventData["event_id"]?.ToString() ?? Guid.NewGuid().ToString()),
             EventType = eventData["event_type"]?.ToString() ?? "unknown",
-            Payload = eventData.ToString(),
-            Timestamp = DateTime.UtcNow
+            EventVersion = eventData["event_version"]?.ToString() ?? "1.0",
+            Producer = eventData["producer"]?.ToString() ?? "unknown",
+            Source = eventData["source"]?.ToString() ?? "simulated",
+            CorrelationId = Guid.TryParse(eventData["correlation_id"]?.ToString(), out var corrId) ? corrId : null,
+            TraceId = Guid.TryParse(eventData["trace_id"]?.ToString(), out var traceId) ? traceId : null,
+            PartitionKey = eventData["partition_key"]?.ToString() ?? "default",
+            TsUtc = DateTime.TryParse(eventData["timestamp"]?.ToString(), out var ts) 
+                ? DateTime.SpecifyKind(ts, DateTimeKind.Utc) 
+                : DateTime.UtcNow,
+            Zone = geo["zone"]?.ToString(),
+            GeoLat = geo["lat"] != null ? Convert.ToDecimal(geo["lat"]) : null,
+            GeoLon = geo["lon"] != null ? Convert.ToDecimal(geo["lon"]) : null,
+            Severity = eventData["severity"]?.ToString(),
+            Payload = eventData["payload"]?.ToString() ?? "{}"
         };
         _context.Events.Add(newEvent);
         await _context.SaveChangesAsync();
@@ -81,12 +94,14 @@ public class EventsController : ControllerBase
         {
             take = Math.Clamp(take, 1, 100);
             var data = _context.Events
-                .OrderByDescending(e => e.Id)
+                .OrderByDescending(e => e.TsUtc)
                 .Take(take)
                 .Select(e => new {
-                    e.Id,
+                    e.EventId,
                     e.EventType,
-                    e.Timestamp
+                    e.TsUtc,
+                    e.Zone,
+                    e.Severity
                 })
                 .ToList();
             return Ok(new { count = data.Count, items = data });
@@ -110,26 +125,5 @@ public class EventsController : ControllerBase
             }
         }
         return Ok("Eventos masivos enviados");
-    }
-
-    [HttpGet("health")]
-    public IActionResult Health()
-    {
-        return Ok("Backend saludable - Listo para simulación en Zona 10");
-    }
-
-    [HttpGet("schema")]
-    public async Task<IActionResult> GetSchema()
-    {
-        try
-        {
-            var schemaPath = Path.Combine(Directory.GetCurrentDirectory(), "Schemas", "event-envelope-schema.json");
-            var schemaContent = await System.IO.File.ReadAllTextAsync(schemaPath);
-            return Ok(JObject.Parse(schemaContent));
-        }
-        catch (Exception ex)
-        {
-            return BadRequest($"Error reading schema: {ex.Message}");
-        }
     }
 }
