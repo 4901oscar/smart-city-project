@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using SmartCityBackend.Models;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 

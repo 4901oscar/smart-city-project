@@ -1,13 +1,20 @@
 # Smart City Event Processing System - AI Agent Instructions
 
 ## Architecture Overview
-Event-driven smart city monitoring system using **Kafka + PostgreSQL + .NET 9**. Events flow: JS Producer → Backend API → Kafka → Consumer → Postgres (Neon Cloud). The system validates sensor events against JSON schemas, enriches with geolocation, publishes to Kafka, and persists to PostgreSQL.
+Event-driven smart city monitoring system using **Kafka + PostgreSQL + .NET 9**. Events flow: JS Producer → Backend API → Kafka (3 topics) → Consumers → Postgres (Neon Cloud). The system validates sensor events against JSON schemas, enriches with geolocation, publishes to specialized Kafka topics, generates correlated alerts, and persists to PostgreSQL.
 
 ### Core Components
 - **Backend (.NET 9 API)**: REST API at port 5000, validates events, produces to Kafka, persists to Postgres
-- **Kafka**: Event streaming (Confluent Platform 7.4.0), topic: `events-topic`
+- **Kafka (3-Topic Architecture)**: 
+  - `events.standardized` (3 partitions, 7d retention): Valid, enriched events
+  - `correlated.alerts` (2 partitions, 30d retention): Generated alerts
+  - `events.dlq` (1 partition, 14d retention): Failed events/validation errors
 - **PostgreSQL (Neon Cloud)**: Event storage with JSONB payloads, connection via SSL
-- **JS Scripts**: Event producer/consumer simulators using axios and kafkajs
+- **JS Scripts**: 
+  - `producer.js`: Event generator sending to Backend API
+  - `consumer.js`: Reads events.standardized, generates alerts, publishes to correlated.alerts
+  - `alert-monitor.js`: Real-time alert monitoring from correlated.alerts
+  - `dlq-monitor.js`: Error monitoring from events.dlq
 
 ## Event Schema Architecture
 
@@ -60,6 +67,12 @@ cd js-scripts; npm run producer
 
 # Consume from Kafka with intelligent multi-level alert detection
 cd js-scripts; npm run consumer
+
+# Monitor correlated alerts in real-time
+cd js-scripts; npm run alert-monitor
+
+# Monitor Dead Letter Queue for failed events
+cd js-scripts; npm run dlq-monitor
 ```
 
 ### Alert Detection System
@@ -102,6 +115,10 @@ This is hardcoded in `EventsController.Post()` - modify for production multi-zon
 - **Internal Docker**: `kafka:29092` (container-to-container)
 - **External**: `localhost:9092` (host machine)
 - **Producer Config**: `Acks.All`, 5s timeout, error logging via ILogger
+- **Topics**:
+  - `events.standardized`: Valid events (Backend → Consumer)
+  - `correlated.alerts`: Generated alerts (Consumer → Alert Monitor)
+  - `events.dlq`: Failed events (Backend → DLQ Monitor)
 - Fallback to `kafka:29092` if `Kafka:BootstrapServers` not configured
 
 ### Database Naming Convention
@@ -120,7 +137,10 @@ This is hardcoded in `EventsController.Post()` - modify for production multi-zon
 - `GET /schema`: Returns all loaded schemas
 
 ### Error Handling Patterns
-- **Validation errors**: 400 with detailed schema violation messages
+- **Validation errors**: 400 with detailed schema violation messages, published to `events.dlq`
+- **Kafka failures**: 502 with Kafka error details, published to `events.dlq`
+- **DB errors**: 500 with connection/query error messages
+- Use `ValidateDetailed()` to return structured error arrays
 - **Kafka failures**: 502 with Kafka error details
 - **DB errors**: 500 with connection/query error messages
 - Use `ValidateDetailed()` to return structured error arrays

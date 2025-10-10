@@ -1,0 +1,210 @@
+# ============================================
+# Smart City Project - .gitignore
+# ============================================
+# Excluye dependencias y archivos generados
+# Todo se reinstala con: npm install, dotnet restore
+# ============================================
+
+# ============================================
+# Node.js / JavaScript
+# ============================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+.pnpm-debug.log*
+
+# ============================================
+# .NET / C#
+# ============================================
+
+# Build results
+[Dd]ebug/
+[Dd]ebugPublic/
+[Rr]elease/
+[Rr]eleases/
+x64/
+x86/
+[Ww][Ii][Nn]32/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+bld/
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+
+# Visual Studio cache/options
+.vs/
+.vscode/settings.json
+.vscode/tasks.json
+.vscode/launch.json
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# Build Results
+*.dll
+*.exe
+*.pdb
+*.cache
+*.ilk
+*.meta
+*.obj
+*.iobj
+*.pch
+*.ipdb
+*.pgc
+*.pgd
+*.rsp
+*.sbr
+*.tlb
+*.tli
+*.tlh
+*.tmp
+*.tmp_proj
+*_wpftmp.csproj
+*.log
+*.tlog
+*.vspscc
+*.vssscc
+.builds
+*.pidb
+*.svclog
+*.scc
+
+# NuGet Packages
+*.nupkg
+*.snupkg
+**/packages/*
+!**/packages/build/
+*.nuget.props
+*.nuget.targets
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# ============================================
+# Docker
+# ============================================
+# No ignorar docker-compose.yml ni Dockerfile
+# Solo ignorar volúmenes y datos generados
+docker-data/
+*.log
+
+# ============================================
+# Databases
+# ============================================
+*.db
+*.sqlite
+*.sqlite3
+
+# ============================================
+# IDEs and Editors
+# ============================================
+
+# VS Code
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json.example
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+
+# Visual Studio
+.vs/
+*.suo
+*.user
+
+# ============================================
+# Operating System Files
+# ============================================
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# Linux
+*~
+
+# ============================================
+# Environment & Secrets
+# ============================================
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+*.key
+*.pem
+secrets/
+
+# ============================================
+# Temporal/Test Files
+# ============================================
+*.tmp
+*.temp
+*.swp
+*~
+test-*.json
+!test-event.json
+
+# ============================================
+# Logs
+# ============================================
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+.pnpm-debug.log*
+
+# ============================================
+# Coverage & Testing
+# ============================================
+coverage/
+*.coverage
+.nyc_output/
+test-results/
+
+# ============================================
+# Archivos que SÍ deben subirse
+# ============================================
+# Los siguientes archivos NO se ignoran:
+
+# JavaScript/Node
+# - package.json (necesario para npm install)
+# - producer.js, consumer.js, etc. (código fuente)
+
+# .NET
+# - *.csproj (necesario para dotnet restore)
+# - *.cs (código fuente)
+# - appsettings.json (configuración, sin secrets)
+
+# Docker
+# - docker-compose.yml (orquestación)
+# - Dockerfile (imagen del backend)
+
+# Database
+# - init-neon.sql (schema inicial)
+
+# Documentation
+# - *.md (documentación)
+# - Schemas/*.json (validación de eventos)

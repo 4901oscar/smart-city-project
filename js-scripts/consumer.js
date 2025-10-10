@@ -1,4 +1,6 @@
 const { Kafka } = require('kafkajs');
+const { v4: uuidv4 } = require('uuid');
+const axios = require('axios');
 
 // Configuración Kafka
 const kafka = new Kafka({
@@ -7,6 +9,10 @@ const kafka = new Kafka({
 });
 
 const consumer = kafka.consumer({ groupId: 'test-group' });
+const producer = kafka.producer(); // Producer para publicar alertas
+
+// URL del backend
+const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:5000';
 
 // Colores para consola
 const colors = {
@@ -71,7 +77,7 @@ function detectarAlertas(event) {
         nivel: 'MEDIO',
         tipo: 'EXCESO DE VELOCIDAD',
         mensaje: `Vehículo a ${payload.velocidad_estimada} km/h en zona`,
-        detalles: `Placa: ${payload.placa_vehicular} | ${payload.color_vehicular} ${payload.modelo_vehiculo}`,
+        detalles: `Placa: ${payload.placa_vehicular} | ${payload.color_vehiculo} ${payload.modelo_vehiculo}`,
         color: colors.yellow
       });
     }
@@ -196,10 +202,10 @@ function detectarAlertas(event) {
 }
 
 // Función para formatear y mostrar alertas
-function mostrarAlertas(event, alertas) {
+async function mostrarAlertas(event, alertas) {
   if (alertas.length === 0) return;
 
-  const { geo, timestamp, event_id } = event;
+  const { geo, timestamp, event_id, correlation_id } = event;
   
   console.log('\n' + '='.repeat(80));
   console.log(`${colors.bright}🚨 ALERTAS DETECTADAS 🚨${colors.reset}`);
@@ -217,14 +223,69 @@ function mostrarAlertas(event, alertas) {
   });
 
   console.log('='.repeat(80) + '\n');
+
+  // Publicar alertas a topic correlated.alerts
+  if (alertas.length > 0) {
+    const alertMessage = {
+      alert_id: uuidv4(),
+      correlation_id: correlation_id || event_id,
+      source_event_id: event_id,
+      event_type: event.event_type,
+      zone: geo.zone,
+      coordinates: {
+        lat: geo.lat,
+        lon: geo.lon
+      },
+      timestamp: new Date().toISOString(),
+      alerts: alertas.map(a => ({
+        level: a.nivel,
+        type: a.tipo,
+        message: a.mensaje,
+        details: a.detalles
+      }))
+    };
+
+    try {
+      // 1. Publicar a Kafka topic correlated.alerts
+      await producer.send({
+        topic: 'correlated.alerts',
+        messages: [
+          {
+            key: geo.zone,
+            value: JSON.stringify(alertMessage)
+          }
+        ]
+      });
+      console.log(`${colors.cyan}✓ Alertas publicadas a correlated.alerts${colors.reset}`);
+
+      // 2. Guardar en base de datos PostgreSQL via Backend API
+      try {
+        const response = await axios.post(`${BACKEND_URL}/alerts`, alertMessage, {
+          headers: { 'Content-Type': 'application/json' },
+          timeout: 5000
+        });
+        console.log(`${colors.green}✓ Alertas guardadas en BD: ${response.data.count} alerta(s)${colors.reset}`);
+      } catch (dbError) {
+        console.error(`${colors.yellow}⚠ Error guardando en BD: ${dbError.message}${colors.reset}`);
+        // No detener el proceso si falla el guardado en BD
+      }
+      
+    } catch (error) {
+      console.error(`${colors.red}✗ Error publicando alertas: ${error.message}${colors.reset}`);
+    }
+  }
 }
 
 const run = async () => {
   await consumer.connect();
-  await consumer.subscribe({ topic: 'events-topic', fromBeginning: true });
+  await producer.connect(); // Conectar producer
+  
+  // Suscribirse a events.standardized (topic de eventos válidos)
+  await consumer.subscribe({ topic: 'events.standardized', fromBeginning: true });
 
   console.log(`${colors.bright}${colors.cyan}Consumer iniciado - Sistema de alertas inteligente activado${colors.reset}`);
-  console.log(`${colors.cyan}Monitoreando: eventos de pánico, velocidad, acústicos y reportes ciudadanos${colors.reset}\n`);
+  console.log(`${colors.cyan}Monitoreando: eventos de pánico, velocidad, acústicos y reportes ciudadanos${colors.reset}`);
+  console.log(`${colors.cyan}Publicando alertas a: correlated.alerts${colors.reset}\n`);
 
   await consumer.run({
     eachMessage: async ({ topic, partition, message }) => {
@@ -235,7 +296,7 @@ const run = async () => {
 
       // Detectar y mostrar alertas
       const alertas = detectarAlertas(event);
-      mostrarAlertas(event, alertas);
+      await mostrarAlertas(event, alertas);
     },
   });
 };

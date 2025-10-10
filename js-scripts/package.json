@@ -6,6 +6,8 @@
   "scripts": {
     "producer": "node producer.js",
     "consumer": "node consumer.js",
+    "alert-monitor": "node alert-monitor.js",
+    "dlq-monitor": "node dlq-monitor.js",
     "start": "npm run producer"
   },
   "dependencies": {

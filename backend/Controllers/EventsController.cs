@@ -34,6 +34,24 @@ public class EventsController : ControllerBase
             var validationResult = _validator.ValidateDetailed(eventData);
             if (!validationResult.isValid)
             {
+                // Publicar eventos inválidos a DLQ
+                var dlqMessage = new JObject
+                {
+                    ["original_event"] = eventData,
+                    ["validation_errors"] = JArray.FromObject(validationResult.errors),
+                    ["timestamp"] = DateTime.UtcNow.ToString("o"),
+                    ["reason"] = "SCHEMA_VALIDATION_FAILED"
+                };
+                
+                try
+                {
+                    await _producer.Publish("events.dlq", dlqMessage.ToString());
+                }
+                catch
+                {
+                    // Si falla DLQ, continuar con el error
+                }
+                
                 return BadRequest(new { message = "Invalid schema or payload", errors = validationResult.errors });
             }
 
@@ -45,13 +63,31 @@ public class EventsController : ControllerBase
         geo["lon"] = geo["lon"] ?? -90.5252;
         eventData["geo"] = geo;
 
-        // Publicar en Kafka
+        // Publicar en Kafka → events.standardized (eventos válidos y enriquecidos)
         try
         {
-            await _producer.Publish("events-topic", eventData.ToString());
+            await _producer.Publish("events.standardized", eventData.ToString());
         }
         catch (Exception kex)
         {
+            // En caso de error de Kafka, publicar a DLQ
+            var dlqMessage = new JObject
+            {
+                ["original_event"] = eventData,
+                ["error"] = kex.Message,
+                ["timestamp"] = DateTime.UtcNow.ToString("o"),
+                ["reason"] = "KAFKA_PUBLISH_ERROR"
+            };
+            
+            try
+            {
+                await _producer.Publish("events.dlq", dlqMessage.ToString());
+            }
+            catch
+            {
+                // Si falla DLQ, continuar con el error
+            }
+            
             return StatusCode(502, new { message = "Error enviando a Kafka", detail = kex.Message });
         }
 
