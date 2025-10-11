@@ -1,10 +1,7 @@
-version: '3.8'
-
 services:
   zookeeper:
     image: confluentinc/cp-zookeeper:7.4.0
     hostname: zookeeper
-    container_name: zookeeper
     ports:
       - "2181:2181"
     environment:
@@ -14,7 +11,6 @@ services:
   kafka:
     image: confluentinc/cp-kafka:7.4.0
     hostname: kafka
-    container_name: kafka
     depends_on:
       - zookeeper
     ports:
@@ -47,7 +43,6 @@ services:
 
   backend:
     build: ./backend
-    container_name: backend
     ports:
       - "5000:8080"
     depends_on:
@@ -57,6 +52,59 @@ services:
       ConnectionStrings__DefaultConnection: "Host=${PGHOST};Database=${PGDATABASE};Username=${PGUSER};Password=${PGPASSWORD};SSL Mode=Require;Timeout=15;Command Timeout=30"
       Kafka__BootstrapServers: kafka:29092
     restart: always
+
+  kafka-exporter:
+    image: danielqsj/kafka-exporter:latest
+    ports:
+      - "9308:9308"
+    environment:
+      KAFKA_SERVER: kafka:29092
+    depends_on:
+      - kafka
+
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - kafka-exporter
+
+  grafana:
+    image: grafana/grafana:9.5.0
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    environment:
+      GF_SECURITY_ADMIN_PASSWORD: "admin"
+    depends_on:
+      - prometheus
+
+  connect:
+    image: confluentinc/cp-kafka-connect:7.4.0
+    ports:
+      - "8083:8083"
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: "kafka:29092"
+      CONNECT_REST_ADVERTISED_HOST_NAME: "connect"
+      CONNECT_GROUP_ID: "connect-cluster"
+      CONNECT_CONFIG_STORAGE_TOPIC: "connect-configs"
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: "1"
+      CONNECT_OFFSET_STORAGE_TOPIC: "connect-offsets"
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: "1"
+      CONNECT_STATUS_STORAGE_TOPIC: "connect-status"
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: "1"
+      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
+      CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: "false"
+      CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
+      CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
+    depends_on:
+      - kafka
+    command: bash -c "confluent-hub install --no-prompt confluentinc/kafka-connect-jdbc:10.5.0 || true; /etc/confluent/docker/run"
 
 # Volumen para PostgreSQL local (deshabilitado)
 #volumes:

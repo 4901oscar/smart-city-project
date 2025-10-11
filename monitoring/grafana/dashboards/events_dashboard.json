@@ -1,0 +1,25 @@
+{
+  "annotations": { "list": [] },
+  "time": { "from": "now-5m", "to": "now" },
+  "refresh": "5s",
+  "uid": "bc0bf931-68a3-48e4-b52e-d3bfb85ed836",
+  "editable": true,
+  "panels": [
+    {
+      "type": "table",
+      "title": "Recent Events",
+      "description": "Latest events read from Postgres (table: events).",
+      "targets": [
+        {
+          "format": "table",
+          "datasource": { "type": "postgres", "uid": "P8A9EDEDB14D532CB" },
+          "rawSql": "SELECT event_id, event_type, ts_utc, payload::text FROM events ORDER BY ts_utc DESC LIMIT 50;",
+          "refId": "A"
+        }
+      ],
+      "id": 1
+    }
+  ],
+  "schemaVersion": 30,
+  "title": "Events (Postgres)"
+}

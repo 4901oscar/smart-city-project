@@ -1,0 +1,14 @@
+apiVersion: 1
+datasources:
+  - name: PostgresEvents
+    type: postgres
+    access: proxy
+    url: "ep-solitary-waterfall-adymysgs-pooler.c-2.us-east-1.aws.neon.tech:5432"
+    database: "SmartCitiesBD"
+    user: "neondb_owner"
+    secureJsonData:
+      password: "npg_c1UK0FbwvrER"
+    isDefault: false
+    jsonData:
+      sslmode: "require"
+      timeInterval: "10s"
