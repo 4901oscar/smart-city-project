@@ -58,6 +58,47 @@ services:
       Kafka__BootstrapServers: kafka:29092
     restart: always
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.10.3
+    container_name: es
+    environment:
+      - node.name=es01
+      - cluster.name=es-docker-cluster
+      - discovery.type=single-node
+      - bootstrap.memory_lock=true
+      - ES_JAVA_OPTS=-Xms1g -Xmx1g
+      - xpack.security.enabled=false
+      - xpack.security.http.ssl.enabled=false
+
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s -u elastic:changeme123 http://localhost:9200/_cluster/health || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.10.3
+    container_name: kibana
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=elastic
+      - ELASTICSEARCH_PASSWORD=changeme123
+    ports:
+      - "5601:5601"
+
+# Volúmenes persistentes
+volumes:
+  esdata:
+    driver: "local"
 # Volumen para PostgreSQL local (deshabilitado)
 #volumes:
 #  postgres_data:

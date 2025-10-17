@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\smart-city-project\\backend\\backend.csproj": {}
+    "C:\\FREMY_DELL\\UMG_FREMY\\OCTAVO CICLO\\ARQUI II\\proyecto final arqui II\\smart-city-project\\backend\\backend.csproj": {}
   },
   "projects": {
-    "C:\\smart-city-project\\backend\\backend.csproj": {
+    "C:\\FREMY_DELL\\UMG_FREMY\\OCTAVO CICLO\\ARQUI II\\proyecto final arqui II\\smart-city-project\\backend\\backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\smart-city-project\\backend\\backend.csproj",
+        "projectUniqueName": "C:\\FREMY_DELL\\UMG_FREMY\\OCTAVO CICLO\\ARQUI II\\proyecto final arqui II\\smart-city-project\\backend\\backend.csproj",
         "projectName": "backend",
-        "projectPath": "C:\\smart-city-project\\backend\\backend.csproj",
-        "packagesPath": "C:\\Users\\oscar\\.nuget\\packages\\",
-        "outputPath": "C:\\smart-city-project\\backend\\obj\\",
+        "projectPath": "C:\\FREMY_DELL\\UMG_FREMY\\OCTAVO CICLO\\ARQUI II\\proyecto final arqui II\\smart-city-project\\backend\\backend.csproj",
+        "packagesPath": "C:\\Users\\usuario\\.nuget\\packages\\",
+        "outputPath": "C:\\FREMY_DELL\\UMG_FREMY\\OCTAVO CICLO\\ARQUI II\\proyecto final arqui II\\smart-city-project\\backend\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\oscar\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\usuario\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
@@ -48,6 +48,10 @@
               "target": "Package",
               "version": "[2.3.0, )"
             },
+            "Elasticsearch.Net": {
+              "target": "Package",
+              "version": "[7.17.5, )"
+            },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
               "version": "[9.0.0-preview.1.24081.2, )"
@@ -59,6 +63,10 @@
             "Microsoft.EntityFrameworkCore.Relational": {
               "target": "Package",
               "version": "[9.0.0-preview.1.24081.2, )"
+            },
+            "NEST": {
+              "target": "Package",
+              "version": "[7.17.5, )"
             },
             "NJsonSchema": {
               "target": "Package",

@@ -1,0 +1,20 @@
+{
+  "description": "Create location from geo.lat/geo.lon and parse timestamp to @timestamp",
+  "processors": [
+    {
+      "set": {
+        "if": "ctx.geo != null && ctx.geo.lat != null && ctx.geo.lon != null",
+        "field": "location",
+        "value": { "lat": "{{geo.lat}}", "lon": "{{geo.lon}}" }
+      }
+    },
+    {
+      "date": {
+        "field": "timestamp",
+        "target_field": "@timestamp",
+        "formats": ["ISO8601"],
+        "ignore_failure": true
+      }
+    }
+  ]
+}
