@@ -4,6 +4,21 @@
         <name>backend</name>
     </assembly>
     <members>
+        <member name="M:SmartCityBackend.Controllers.AlertsController.Post">
+            <summary>
+            Endpoint para recibir y guardar alertas correlacionadas
+            </summary>
+        </member>
+        <member name="M:SmartCityBackend.Controllers.AlertsController.Get(System.Int32,System.String)">
+            <summary>
+            Obtener alertas recientes
+            </summary>
+        </member>
+        <member name="M:SmartCityBackend.Controllers.AlertsController.GetStats(System.String)">
+            <summary>
+            Obtener estadísticas de alertas
+            </summary>
+        </member>
         <member name="M:SmartCityBackend.Controllers.HealthController.Get">
             <summary>
             Endpoint de liveness/readiness para health checks
@@ -25,6 +40,57 @@
             <returns>JSON Schema del evento canónico v1.0</returns>
             <response code="200">Esquema canónico retornado exitosamente</response>
             <response code="500">Error al leer el archivo de esquema</response>
+        </member>
+        <member name="T:SmartCityBackend.Models.Alert">
+            <summary>
+            Modelo para alertas correlacionadas en el sistema Smart City
+            </summary>
+        </member>
+        <member name="P:SmartCityBackend.Models.Alert.AlertId">
+            <summary>
+            Identificador único de la alerta
+            </summary>
+        </member>
+        <member name="P:SmartCityBackend.Models.Alert.CorrelationId">
+            <summary>
+            ID de correlación con el evento original
+            </summary>
+        </member>
+        <member name="P:SmartCityBackend.Models.Alert.Type">
+            <summary>
+            Tipo de alerta generada
+            </summary>
+        </member>
+        <member name="P:SmartCityBackend.Models.Alert.Score">
+            <summary>
+            Score o puntuación de la alerta (severidad numérica)
+            </summary>
+        </member>
+        <member name="P:SmartCityBackend.Models.Alert.Zone">
+            <summary>
+            Zona geográfica de la alerta
+            </summary>
+        </member>
+        <member name="P:SmartCityBackend.Models.Alert.WindowStart">
+            <summary>
+            Inicio de la ventana temporal de correlación
+            </summary>
+        </member>
+        <member name="P:SmartCityBackend.Models.Alert.WindowEnd">
+            <summary>
+            Fin de la ventana temporal de correlación
+            </summary>
+        </member>
+        <member name="P:SmartCityBackend.Models.Alert.Evidence">
+            <summary>
+            Evidencia de la alerta (array de event_ids con contexto)
+            Almacenado como JSONB en PostgreSQL
+            </summary>
+        </member>
+        <member name="P:SmartCityBackend.Models.Alert.CreatedAt">
+            <summary>
+            Fecha y hora de creación de la alerta
+            </summary>
         </member>
         <member name="T:SmartCityBackend.Models.EventEnvelope">
             <summary>

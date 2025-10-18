@@ -1,0 +1,27 @@
+{
+  "index_patterns": ["events-*", "alerts-*"],
+  "priority": 500,
+  "template": {
+    "settings": {
+      "number_of_shards": 1,
+      "number_of_replicas": 0
+    },
+    "mappings": {
+      "properties": {
+        "event_id":   { "type": "keyword" },
+        "event_type": { "type": "keyword" },
+        "timestamp":  { "type": "date" },
+        "severity":   { "type": "keyword" },
+        "geo": {
+          "properties": {
+            "zone": { "type": "keyword" },
+            "lat":  { "type": "float" },
+            "lon":  { "type": "float" }
+          }
+        },
+        "location": { "type": "geo_point" },
+        "payload": { "type": "object", "enabled": true }
+      }
+    }
+  }
+}

@@ -14,12 +14,16 @@ public class EventsController : ControllerBase
     private readonly EventValidatorService _validator;
     private readonly KafkaProducerService _producer;
     private readonly EventDbContext _context;
+    private readonly ElasticsearchService _elasticsearch;
 
-    public EventsController(EventValidatorService validator, KafkaProducerService producer, EventDbContext context)
+
+    public EventsController(EventValidatorService validator, KafkaProducerService producer, EventDbContext context, ElasticsearchService elasticsearch)
     {
         _validator = validator;
         _producer = producer;
         _context = context;
+        _elasticsearch = elasticsearch;
+
     }
 
     [HttpPost]
@@ -113,6 +117,7 @@ public class EventsController : ControllerBase
         };
         _context.Events.Add(newEvent);
         await _context.SaveChangesAsync();
+        await _elasticsearch.IndexEventAsync(eventData, "events-000001");
 
             return Ok("Evento enviado, enriquecido y persistido para alerta en Zona 10");
         }
