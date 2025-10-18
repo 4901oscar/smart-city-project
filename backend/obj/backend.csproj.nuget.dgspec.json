@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "C:\\FREMY_DELL\\UMG_FREMY\\OCTAVO CICLO\\ARQUI II\\proyecto final arqui II\\smart-city-project\\backend\\backend.csproj": {}
+    "C:\\smart-city-project\\backend\\backend.csproj": {}
   },
   "projects": {
-    "C:\\FREMY_DELL\\UMG_FREMY\\OCTAVO CICLO\\ARQUI II\\proyecto final arqui II\\smart-city-project\\backend\\backend.csproj": {
+    "C:\\smart-city-project\\backend\\backend.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\FREMY_DELL\\UMG_FREMY\\OCTAVO CICLO\\ARQUI II\\proyecto final arqui II\\smart-city-project\\backend\\backend.csproj",
+        "projectUniqueName": "C:\\smart-city-project\\backend\\backend.csproj",
         "projectName": "backend",
-        "projectPath": "C:\\FREMY_DELL\\UMG_FREMY\\OCTAVO CICLO\\ARQUI II\\proyecto final arqui II\\smart-city-project\\backend\\backend.csproj",
-        "packagesPath": "C:\\Users\\usuario\\.nuget\\packages\\",
-        "outputPath": "C:\\FREMY_DELL\\UMG_FREMY\\OCTAVO CICLO\\ARQUI II\\proyecto final arqui II\\smart-city-project\\backend\\obj\\",
+        "projectPath": "C:\\smart-city-project\\backend\\backend.csproj",
+        "packagesPath": "C:\\Users\\oscar\\.nuget\\packages\\",
+        "outputPath": "C:\\smart-city-project\\backend\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "C:\\Users\\usuario\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\oscar\\AppData\\Roaming\\NuGet\\NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net9.0"

@@ -90,6 +90,20 @@ services:
     ports:
       - "5601:5601"
 
+  # Kafka UI - Interface gráfica para administrar Kafka
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: kafka-ui
+    ports:
+      - "8080:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: smart-city-cluster
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+    depends_on:
+      - kafka
+      - zookeeper
+
   # Monitoring & tooling (optional)
   kafka-exporter:
     image: danielqsj/kafka-exporter:latest
