@@ -3,7 +3,16 @@ const { v4: uuidv4 } = require('uuid');
 
 // Configuración
 const BACKEND_URL = 'http://localhost:5000/events';
-const ZONA_10 = { zone: 'Zona 10', lat: 14.6091, lon: -90.5252 };
+
+// Múltiples zonas para simular ciudad inteligente
+const ZONAS = [
+  { zone: 'Zona 10', lat: 14.6091, lon: -90.5252 },
+  { zone: 'Zona 1', lat: 14.6349, lon: -90.5069 },
+  { zone: 'Zona 4', lat: 14.6198, lon: -90.4789 },
+  { zone: 'Zona 9', lat: 14.5958, lon: -90.5025 },
+  { zone: 'Zona 13', lat: 14.6070, lon: -90.4842 },
+  { zone: 'Centro Histórico', lat: 14.6407, lon: -90.5133 }
+];
 
 // Tipos de eventos (basado en proyecto)
 const EVENT_TYPES = ['panic.button', 'sensor.lpr', 'sensor.speed', 'sensor.acoustic', 'citizen.report'];
@@ -131,6 +140,8 @@ async function sendEvent() {
     severity = payload.tipo_evento === 'incendio' ? 'critical' : payload.tipo_evento === 'accidente' ? 'warning' : 'info';
   }
 
+  const randomZone = ZONAS[Math.floor(Math.random() * ZONAS.length)];
+  
   const eventData = {
     event_version: '1.0',
     event_type: eventType,
@@ -140,15 +151,15 @@ async function sendEvent() {
     correlation_id: uuidv4(),
     trace_id: uuidv4(),
     timestamp: new Date().toISOString(),
-    partition_key: 'zone_10',
-    geo: ZONA_10,
+    partition_key: randomZone.zone.toLowerCase().replace(' ', '_'),
+    geo: randomZone,
     severity: severity,
     payload: payload
   };
 
   try {
     const response = await axios.post(BACKEND_URL, eventData);
-    console.log(`✓ [${eventType}] Severity: ${severity} - ${response.data}`);
+    console.log(`✓ [${eventType}] ${randomZone.zone} - Severity: ${severity} - ${response.data}`);
   } catch (error) {
     console.error('✗ Error al enviar evento:', error.response?.data || error.message);
   }
@@ -156,5 +167,6 @@ async function sendEvent() {
 
 // Simular eventos cada 3 segundos para ver más variedad
 setInterval(sendEvent, 3000);
-console.log('🚀 Producer iniciado - Enviando eventos simulados con datos completos a Zona 10...');
+console.log('🚀 Producer iniciado - Enviando eventos simulados a múltiples zonas...');
+console.log('📊 Generando eventos en:', ZONAS.map(z => z.zone).join(', '));
 console.log('📊 Generando eventos: panic.button, sensor.lpr, sensor.speed, sensor.acoustic, citizen.report\n');

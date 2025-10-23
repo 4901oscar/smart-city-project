@@ -13,7 +13,8 @@ builder.Services.AddDbContext<EventDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddSingleton<EventValidatorService>();
 builder.Services.AddSingleton<KafkaProducerService>();
-builder.Services.AddSingleton<ElasticsearchService>();
+// Elasticsearch service deshabilitado para simplificar el sistema
+//builder.Services.AddSingleton<ElasticsearchService>();
 
 
 // Configura Swagger para documentación y pruebas de APIs

@@ -6,7 +6,7 @@ datasources:
     type: prometheus
     access: proxy
     url: http://prometheus:9090
-    isDefault: true
+    isDefault: false
     editable: true
     jsonData:
       timeInterval: "15s"
@@ -14,11 +14,12 @@ datasources:
   # PostgreSQL - Base de datos de eventos y alertas
   - name: Smart City PostgreSQL
     type: postgres
+    uid: smart-city-postgres
     access: proxy
     url: ${PGHOST}:5432
     database: ${PGDATABASE}
     user: ${PGUSER}
-    isDefault: false
+    isDefault: true
     editable: true
     secureJsonData:
       password: ${PGPASSWORD}

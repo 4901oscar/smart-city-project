@@ -14,15 +14,16 @@ public class EventsController : ControllerBase
     private readonly EventValidatorService _validator;
     private readonly KafkaProducerService _producer;
     private readonly EventDbContext _context;
-    private readonly ElasticsearchService _elasticsearch;
+    // ElasticsearchService deshabilitado
+    // private readonly ElasticsearchService _elasticsearch;
 
 
-    public EventsController(EventValidatorService validator, KafkaProducerService producer, EventDbContext context, ElasticsearchService elasticsearch)
+    public EventsController(EventValidatorService validator, KafkaProducerService producer, EventDbContext context)
     {
         _validator = validator;
         _producer = producer;
         _context = context;
-        _elasticsearch = elasticsearch;
+        // _elasticsearch = elasticsearch;
 
     }
 
@@ -117,9 +118,12 @@ public class EventsController : ControllerBase
         };
         _context.Events.Add(newEvent);
         await _context.SaveChangesAsync();
-        await _elasticsearch.IndexEventAsync(eventData, "events-000001");
+        
+        // Elasticsearch indexing deshabilitado
+        // await _elasticsearch.IndexEventAsync(eventData, "events-000001");
 
-            return Ok("Evento enviado, enriquecido y persistido para alerta en Zona 10");
+        var zoneName = geo["zone"]?.ToString() ?? "Zona Desconocida";
+        return Ok($"Evento enviado, enriquecido y persistido para alerta en {zoneName}");
         }
         catch (Exception ex)
         {

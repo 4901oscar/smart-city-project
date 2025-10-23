@@ -379,3 +379,9 @@ docker-compose logs -f backend
 ```
 
 **¿Todo funciona?** ¡Felicidades! 🎉 El sistema está listo para demos y desarrollo.
+
+
+
+PARAR PROCESOS PRODUCER Y CONSUMER
+
+Stop-Process -Name "node" -Force
