@@ -1,0 +1,35 @@
+{
+  "version": "8.10.3",
+  "objects": [
+    {
+      "id": "events-dataview",
+      "type": "index-pattern",
+      "namespaces": ["default"],
+      "attributes": {
+        "title": "events*",
+        "timeFieldName": "timestamp",
+        "name": "Smart City Events",
+        "fields": "[{\"name\":\"@timestamp\",\"type\":\"date\",\"esTypes\":[\"date\"],\"searchable\":true,\"aggregatable\":true},{\"name\":\"event_id\",\"type\":\"string\",\"esTypes\":[\"keyword\"],\"searchable\":true,\"aggregatable\":true},{\"name\":\"event_type\",\"type\":\"string\",\"esTypes\":[\"keyword\"],\"searchable\":true,\"aggregatable\":true},{\"name\":\"geo.location\",\"type\":\"geo_point\",\"esTypes\":[\"geo_point\"],\"searchable\":true,\"aggregatable\":true},{\"name\":\"geo.lat\",\"type\":\"number\",\"esTypes\":[\"double\"],\"searchable\":true,\"aggregatable\":true},{\"name\":\"geo.lon\",\"type\":\"number\",\"esTypes\":[\"double\"],\"searchable\":true,\"aggregatable\":true},{\"name\":\"geo.zone\",\"type\":\"string\",\"esTypes\":[\"keyword\"],\"searchable\":true,\"aggregatable\":true},{\"name\":\"severity\",\"type\":\"string\",\"esTypes\":[\"keyword\"],\"searchable\":true,\"aggregatable\":true},{\"name\":\"timestamp\",\"type\":\"date\",\"esTypes\":[\"date\"],\"searchable\":true,\"aggregatable\":true}]"
+      },
+      "references": [],
+      "coreMigrationVersion": "8.10.3",
+      "typeMigrationVersion": "8.0.0",
+      "managed": false
+    },
+    {
+      "id": "alerts-dataview",
+      "type": "index-pattern",
+      "namespaces": ["default"],
+      "attributes": {
+        "title": "alerts*",
+        "timeFieldName": "@timestamp",
+        "name": "Smart City Alerts",
+        "fields": "[{\"name\":\"@timestamp\",\"type\":\"date\",\"esTypes\":[\"date\"],\"searchable\":true,\"aggregatable\":true},{\"name\":\"alert_id\",\"type\":\"string\",\"esTypes\":[\"keyword\"],\"searchable\":true,\"aggregatable\":true},{\"name\":\"correlation_id\",\"type\":\"string\",\"esTypes\":[\"keyword\"],\"searchable\":true,\"aggregatable\":true},{\"name\":\"event_type\",\"type\":\"string\",\"esTypes\":[\"keyword\"],\"searchable\":true,\"aggregatable\":true},{\"name\":\"geo_location\",\"type\":\"geo_point\",\"esTypes\":[\"geo_point\"],\"searchable\":true,\"aggregatable\":true},{\"name\":\"geo_location.lat\",\"type\":\"number\",\"esTypes\":[\"double\"],\"searchable\":true,\"aggregatable\":true},{\"name\":\"geo_location.lon\",\"type\":\"number\",\"esTypes\":[\"double\"],\"searchable\":true,\"aggregatable\":true},{\"name\":\"zone\",\"type\":\"string\",\"esTypes\":[\"keyword\"],\"searchable\":true,\"aggregatable\":true},{\"name\":\"alerts.level\",\"type\":\"string\",\"esTypes\":[\"keyword\"],\"searchable\":true,\"aggregatable\":true},{\"name\":\"alerts.type\",\"type\":\"string\",\"esTypes\":[\"keyword\"],\"searchable\":true,\"aggregatable\":true}]"
+      },
+      "references": [],
+      "coreMigrationVersion": "8.10.3",
+      "typeMigrationVersion": "8.0.0",
+      "managed": false
+    }
+  ]
+}

@@ -353,8 +353,75 @@ npm install
 
 ---
 
-## 📖 Documentación Adicional
+## � Persistencia y Re-inicialización
 
+### **Inicialización Completa Automatizada**
+
+Usa el script maestro para inicializar **todo** el sistema:
+
+```powershell
+# Inicializa: Elasticsearch + Kibana Data Views
+.\scripts\init-all.ps1
+```
+
+Este script es **idempotente** (puedes ejecutarlo múltiples veces sin problemas).
+
+### **Reinicio Completo (Desde Cero)**
+
+```powershell
+# 1. Detener y borrar TODO (incluye volúmenes)
+docker compose down -v
+
+# 2. Re-inicializar sistema completo
+.\scripts\init-all.ps1
+
+# 3. Iniciar consumer y producer
+cd js-scripts
+npm run consumer   # Terminal 1
+npm run producer   # Terminal 2
+```
+
+### **Reinicio Normal (Conservando Datos)**
+
+```powershell
+# 1. Detener sin borrar volúmenes
+docker compose down
+
+# 2. Levantar de nuevo
+docker compose up -d
+
+# ✅ Los Data Views y datos se conservan automáticamente
+```
+
+### **Persistencia de Kibana**
+
+El sistema incluye **3 métodos** para persistir configuraciones de Kibana:
+
+1. **Volumen Docker** (`kibana_data`) - ✅ Ya configurado
+   - Persiste automáticamente Data Views, Dashboards, Saved Objects
+   - Sobrevive a `docker compose down` (sin `-v`)
+
+2. **Script de inicialización** - ✅ Recomendado
+   ```powershell
+   .\scripts\init-kibana-dataviews.ps1
+   ```
+   - Crea automáticamente:
+     - Data View "Smart City Events" (`events*`)
+     - Data View "Smart City Alerts" (`alerts*`)
+   - Se ejecuta automáticamente con `init-all.ps1`
+
+3. **Export/Import manual** - Para backups avanzados
+   - Ver `KIBANA_PERSISTENCE.md` para detalles
+
+**Documentación completa**: Ver `KIBANA_PERSISTENCE.md`
+
+---
+
+## �📖 Documentación Adicional
+
+- **Persistencia de Kibana**: Ver `KIBANA_PERSISTENCE.md` ⭐ NUEVO
+- **Guía de Elasticsearch**: Ver `ELASTICSEARCH_GUIDE.md`
+- **Grafana + Kafka**: Ver `GRAFANA_KAFKA_GUIDE.md`
 - **Testing Completo**: Ver `TESTING.md`
 - **Referencia de Alertas**: Ver `ALERTS_REFERENCE.md`
 - **Compliance Specs**: Ver `COMPLIANCE.md`

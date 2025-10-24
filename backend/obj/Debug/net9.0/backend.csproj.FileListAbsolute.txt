@@ -438,3 +438,7 @@ C:\Users\danie\OneDrive\Documentos\GitHub\smart-city-project\backend\obj\Debug\n
 C:\Users\danie\OneDrive\Documentos\GitHub\smart-city-project\backend\obj\Debug\net9.0\backend.pdb
 C:\Users\danie\OneDrive\Documentos\GitHub\smart-city-project\backend\obj\Debug\net9.0\backend.genruntimeconfig.cache
 C:\Users\danie\OneDrive\Documentos\GitHub\smart-city-project\backend\obj\Debug\net9.0\ref\backend.dll
+C:\smart-city-project\backend\bin\Debug\net9.0\elasticsearch\events_alerts_template.json
+C:\smart-city-project\backend\bin\Debug\net9.0\elasticsearch\pipeline_geo.json
+C:\smart-city-project\backend\bin\Debug\net9.0\Elasticsearch.Net.dll
+C:\smart-city-project\backend\bin\Debug\net9.0\Nest.dll
