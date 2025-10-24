@@ -31,10 +31,8 @@ public class AlertsController : ControllerBase
             var alertData = JObject.Parse(json);
 
             // Extraer datos de la alerta
-            var alertId = Guid.Parse(alertData["alert_id"]?.ToString() ?? Guid.NewGuid().ToString());
-            var correlationId = alertData["correlation_id"] != null 
-                ? Guid.Parse(alertData["correlation_id"]!.ToString()) 
-                : (Guid?)null;
+            var alertId = alertData["alert_id"]?.ToString() ?? Guid.NewGuid().ToString();
+            var correlationId = alertData["correlation_id"]?.ToString();
             
             var sourceEventId = alertData["source_event_id"]?.ToString();
             var eventType = alertData["event_type"]?.ToString();
@@ -84,7 +82,7 @@ public class AlertsController : ControllerBase
                 // Crear modelo de alerta
                 var alert = new Alert
                 {
-                    AlertId = Guid.NewGuid(), // Generar nuevo ID para cada alerta del array
+                    AlertId = Guid.NewGuid().ToString(), // Generar nuevo ID para cada alerta del array
                     CorrelationId = correlationId,
                     Type = type ?? "UNKNOWN",
                     Score = score,

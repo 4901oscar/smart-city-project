@@ -23,6 +23,38 @@ Antes de comenzar, asegúrate de tener instalado:
 
 ---
 
+## 🎯 Métodos de Inicio
+
+### **Método A: Inicio Automático (Recomendado)** ⚡
+
+**Todo en un solo comando - incluye:**
+- ✅ Docker Compose up
+- ✅ Creación de Kafka Topics
+- ✅ Kibana Data Views automáticos
+- ✅ Verificación de servicios
+
+```powershell
+# 1. Clonar repositorio
+git clone https://github.com/4901oscar/smart-city-project.git
+cd smart-city-project
+
+# 2. Instalar dependencias
+cd js-scripts
+npm install
+cd ..
+
+# 3. Iniciar sistema completo (1 comando)
+.\init-system.ps1
+
+# ✓ Sistema listo en ~3 minutos!
+```
+
+---
+
+### **Método B: Inicio Manual (Paso a Paso)** 🔧
+
+Si prefieres control total sobre cada paso:
+
 ## 📥 Paso 1: Clonar el Repositorio (2 minutos)
 
 ```powershell
@@ -68,15 +100,46 @@ docker compose up -d
 # Verificar que todos estén corriendo
 docker ps
 
-# Deberías ver 8+ contenedores:
+# Deberías ver 12+ contenedores:
 # - backend
 # - smart-city-project-kafka-1
 # - smart-city-project-zookeeper-1
 # - airflow-webserver
 # - airflow-scheduler
 # - postgres-airflow
-# - elasticsearch (opcional)
-# - kibana (opcional)
+# - es (Elasticsearch)
+# - kibana
+# - grafana
+# - prometheus
+# - kafka-ui
+# - kafka-exporter
+```
+
+### **Crear Kafka Topics (Manual)**
+
+```powershell
+# Topic 1: Eventos estandarizados
+docker exec kafka kafka-topics --create --bootstrap-server localhost:9092 --topic events.standardized --partitions 3 --replication-factor 1
+
+# Topic 2: Alertas correlacionadas
+docker exec kafka kafka-topics --create --bootstrap-server localhost:9092 --topic correlated.alerts --partitions 2 --replication-factor 1
+
+# Topic 3: Dead Letter Queue
+docker exec kafka kafka-topics --create --bootstrap-server localhost:9092 --topic events.dlq --partitions 1 --replication-factor 1
+
+# Verificar topics creados
+docker exec kafka kafka-topics --list --bootstrap-server localhost:9092
+```
+
+### **Crear Kibana Data Views (Automático)**
+
+```powershell
+# Ejecutar script de inicialización (espera ~60 segundos a que Kibana esté listo)
+.\scripts\init-kibana-dataviews.ps1
+
+# El script crea automáticamente:
+# ✓ Data View "Smart City Events" (events*)
+# ✓ Data View "Smart City Alerts" (alerts*)
 ```
 
 ### Verificar Logs de Inicialización
@@ -196,23 +259,52 @@ npm run alert-monitor
 1. Abre http://localhost:8090
 2. Login: `admin` / `admin`
 3. Verás el DAG: **alert_dispatch_pipeline**
+4. Verificar que el DAG esté **Unpaused** (toggle azul activado)
 
 ### 6.2 Verificar Ejecuciones del DAG
 
-El DAG se ejecuta automáticamente **cada 1 minuto** y:
-1. **Fetch Alerts**: Consulta `/alerts?take=10` del backend
-2. **Classify**: Determina qué entidades deben recibir cada alerta
-3. **Dispatch**: Envía POST a `/dispatch/{entity}`
+El DAG se ejecuta automáticamente **cada 1 minuto** y realiza:
 
+**Tareas del DAG**:
+1. **fetch_alerts** (Task 1): 
+   - Consulta `GET /alerts?take=10` del backend
+   - Duration: ~0.3s
+   - State: success ✅
+
+2. **dispatch_alerts** (Task 2):
+   - Clasifica alertas según tipo
+   - Despacha a entidades correspondientes
+   - Duration: ~0.2s
+   - State: success ✅
+
+**Verificar en logs del scheduler**:
 ```powershell
-# Ver logs del scheduler
-docker logs airflow-scheduler --tail 50
+docker logs airflow-scheduler --tail 50 | Select-String "DagRun Finished"
 
-# Buscar ejecuciones exitosas:
+# Deberías ver:
 # [INFO] - DagRun Finished: dag_id=alert_dispatch_pipeline, state=success
+# run_duration=2.2s, state=success
 ```
 
-### 6.3 Verificar Despachos en el Backend
+### 6.3 Estado Actual del Sistema
+
+**Métricas de Orquestación** (últimos 10 minutos):
+- ✅ **3 ejecuciones exitosas** del DAG
+- ✅ **100 despachos** realizados:
+  - 40 a Policía de Tránsito
+  - 30 a Policía Municipal
+  - 30 a Policía Nacional
+- ✅ **0 errores** en tareas
+- ✅ **2.2s promedio** de duración por ejecución
+
+**Tipos de Alertas Procesadas**:
+- DISPARO DETECTADO → Policía Nacional ✅
+- EXCESO DE VELOCIDAD → Policía de Tránsito ✅
+- EMERGENCIA GENERAL → Policía Municipal ✅
+- INCENDIO REPORTADO → Bomberos (cuando se detectan)
+- ACCIDENTE REPORTADO → Bomberos Voluntarios + Cruz Roja
+
+### 6.4 Verificar Despachos en el Backend
 
 ```powershell
 # Ver logs de despachos (últimos 2 minutos)
@@ -223,6 +315,54 @@ docker logs backend --since 2m | Select-String "DESPACHO"
 # 👮 DESPACHO A POLICÍA NACIONAL - Alert ID: def456...
 # 🚒 DESPACHO A BOMBEROS - Alert ID: ghi789...
 # 📋 DESPACHO A POLICÍA DE TRÁNSITO - Alert ID: jkl012...
+
+# Contar despachos por entidad
+docker logs backend --since 5m | Select-String "DESPACHO" | Group-Object | Select-Object Count, Name
+```
+
+### 6.5 Monitorear DAG en Tiempo Real
+
+En Airflow UI puedes:
+1. Click en el DAG **alert_dispatch_pipeline**
+2. Ver **Grid View** - Historial de ejecuciones
+3. Ver **Graph View** - Flujo de tareas
+4. Click en una tarea → **Logs** para ver detalles
+5. Ver **Code** - Código fuente del DAG
+
+**Indicadores de Salud**:
+- 🟢 **Verde**: Todas las ejecuciones exitosas
+- 🔵 **Azul**: Ejecución en progreso
+- 🔴 **Rojo**: Error (requiere atención)
+
+### 6.6 Troubleshooting de Airflow
+
+**Problema**: DAG no se ejecuta
+```powershell
+# Verificar que el scheduler esté corriendo
+docker ps --filter "name=airflow-scheduler"
+
+# Ver logs del scheduler
+docker logs airflow-scheduler --tail 100
+
+# Reiniciar scheduler
+docker restart airflow-scheduler
+```
+
+**Problema**: Tareas fallan
+```powershell
+# Ver logs de la tarea específica en Airflow UI
+# O ver logs completos del scheduler
+docker logs airflow-scheduler --tail 200 | Select-String "ERROR"
+```
+
+**Problema**: No hay alertas para despachar
+```powershell
+# Verificar que hay alertas en la BD
+curl http://localhost:5000/alerts?take=10
+
+# Generar más eventos con el producer
+cd js-scripts
+npm run producer
 ```
 
 ---

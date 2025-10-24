@@ -6,6 +6,7 @@
   "scripts": {
     "producer": "node producer.js",
     "consumer": "node consumer.js",
+    "consumer-kafka": "node consumer-kafka.js",
     "dispatcher": "node alert-dispatcher.js",
     "alert-monitor": "node alert-monitor.js",
     "dlq-monitor": "node dlq-monitor.js",
@@ -13,8 +14,10 @@
   },
   "dependencies": {
     "axios": "^1.6.0",
+    "dotenv": "^17.2.3",
     "kafkajs": "^2.2.4",
     "kafkajs-snappy": "^1.1.0",
+    "pg": "^8.16.3",
     "snappy": "^7.3.3",
     "uuid": "^9.0.1"
   }

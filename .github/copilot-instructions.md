@@ -1,20 +1,34 @@
 # Smart City Event Processing System - AI Agent Instructions
 
 ## Architecture Overview
-Event-driven smart city monitoring system using **Kafka + PostgreSQL + .NET 9**. Events flow: JS Producer → Backend API → Kafka (3 topics) → Consumers → Postgres (Neon Cloud). The system validates sensor events against JSON schemas, enriches with geolocation, publishes to specialized Kafka topics, generates correlated alerts, and persists to PostgreSQL.
+Event-driven smart city monitoring system using **PostgreSQL (Azure) + Kafka + .NET 9**. Events flow: JS Producer → Backend API → Kafka (events.standardized) → PostgreSQL (Azure). Consumer reads from PostgreSQL (polling every 5s), detects patterns, and generates alerts stored in PostgreSQL + Elasticsearch. Apache Airflow orchestrates alert dispatch to emergency entities.
 
 ### Core Components
-- **Backend (.NET 9 API)**: REST API at port 5000, validates events, produces to Kafka, persists to Postgres
+- **Backend (.NET 9 API)**: REST API at port 5000, validates events, produces to Kafka, persists to PostgreSQL (Azure)
 - **Kafka (3-Topic Architecture)**: 
   - `events.standardized` (3 partitions, 7d retention): Valid, enriched events
-  - `correlated.alerts` (2 partitions, 30d retention): Generated alerts
+  - `correlated.alerts` (2 partitions, 30d retention): Legacy - no longer used
   - `events.dlq` (1 partition, 14d retention): Failed events/validation errors
-- **PostgreSQL (Neon Cloud)**: Event storage with JSONB payloads, connection via SSL
+- **PostgreSQL (Azure Cloud)**: Primary data store at arqui-pg.postgres.database.azure.com, SmartCitiesBD database, SSL required
+- **Elasticsearch**: Search and analytics engine for events and alerts
+- **Apache Airflow**: Orchestrates alert dispatch every 1 minute (DAG: alert_dispatch_pipeline)
 - **JS Scripts**: 
   - `producer.js`: Event generator sending to Backend API
-  - `consumer.js`: Reads events.standardized, generates alerts, publishes to correlated.alerts
-  - `alert-monitor.js`: Real-time alert monitoring from correlated.alerts
-  - `dlq-monitor.js`: Error monitoring from events.dlq
+  - `consumer.js`: **NEW v2.0** - Reads from PostgreSQL (polling), generates alerts, saves to PostgreSQL + Elasticsearch
+  - `consumer-kafka.js`: Legacy Kafka consumer (backup)
+  - `alert-monitor.js`: Real-time alert monitoring from correlated.alerts topic
+  - `dlq-monitor.js`: Error monitoring from events.dlq topic
+
+### **Architecture Change (v2.0)**: PostgreSQL as Single Source of Truth
+**Old Flow**: Producer → Backend → Kafka → Consumer (Kafka stream) → Alerts  
+**New Flow**: Producer → Backend → Kafka → PostgreSQL → Consumer (PostgreSQL polling every 5s) → Alerts
+
+**Benefits**:
+1. ✅ PostgreSQL as single source of truth (no data duplication)
+2. ✅ Simplified architecture (less Kafka dependency)
+3. ✅ Better fault tolerance (DB persists data, consumer can restart anytime)
+4. ✅ Easier debugging (SQL queries vs. Kafka offset management)
+5. ✅ Consumer polls only new events using timestamp tracking
 
 ## Event Schema Architecture
 

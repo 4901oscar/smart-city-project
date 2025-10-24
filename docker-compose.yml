@@ -106,6 +106,18 @@ services:
       retries: 5
     restart: unless-stopped
 
+  # Servicio de inicialización de Kibana Data Views (se ejecuta una vez y termina)
+  kibana-init:
+    image: curlimages/curl:latest
+    container_name: kibana-init
+    volumes:
+      - ./scripts/init-kibana.sh:/init-kibana.sh:ro
+    entrypoint: ["/bin/sh", "/init-kibana.sh"]
+    depends_on:
+      kibana:
+        condition: service_healthy
+    restart: "no"  # Solo se ejecuta una vez
+
   # Kafka UI - Interface gráfica para administrar Kafka
   kafka-ui:
     image: provectuslabs/kafka-ui:latest
@@ -154,29 +166,6 @@ services:
       PGPASSWORD: ${PGPASSWORD}
     depends_on:
       - prometheus
-
-  connect:
-    image: confluentinc/cp-kafka-connect:7.4.0
-    ports:
-      - "8083:8083"
-    environment:
-      CONNECT_BOOTSTRAP_SERVERS: "kafka:29092"
-      CONNECT_REST_ADVERTISED_HOST_NAME: "connect"
-      CONNECT_GROUP_ID: "connect-cluster"
-      CONNECT_CONFIG_STORAGE_TOPIC: "connect-configs"
-      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: "1"
-      CONNECT_OFFSET_STORAGE_TOPIC: "connect-offsets"
-      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: "1"
-      CONNECT_STATUS_STORAGE_TOPIC: "connect-status"
-      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: "1"
-      CONNECT_KEY_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
-      CONNECT_VALUE_CONVERTER: "org.apache.kafka.connect.json.JsonConverter"
-      CONNECT_KEY_CONVERTER_SCHEMAS_ENABLE: "false"
-      CONNECT_VALUE_CONVERTER_SCHEMAS_ENABLE: "false"
-      CONNECT_PLUGIN_PATH: "/usr/share/java,/usr/share/confluent-hub-components"
-    depends_on:
-      - kafka
-    command: bash -c "confluent-hub install --no-prompt confluentinc/kafka-connect-jdbc:10.5.0 || true; /etc/confluent/docker/run"
 
   # Apache Airflow - Orquestador de alertas
   postgres-airflow:

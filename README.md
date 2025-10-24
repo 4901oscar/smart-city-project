@@ -27,6 +27,24 @@ Sistema event-driven de monitoreo urbano que procesa eventos de sensores en tiem
 
 ### Instalación
 
+**Opción A: Inicio Automático (Recomendado)** ⚡
+```powershell
+# 1. Clonar repositorio
+git clone https://github.com/4901oscar/smart-city-project.git
+cd smart-city-project
+
+# 2. Instalar dependencias JavaScript
+cd js-scripts
+npm install
+cd ..
+
+# 3. Iniciar sistema completo (incluye Docker + Kafka Topics + Kibana Data Views)
+.\init-system.ps1
+
+# 4. Sistema listo! Todos los Data Views creados automáticamente
+```
+
+**Opción B: Inicio Manual** 🔧
 ```powershell
 # 1. Clonar repositorio
 git clone https://github.com/4901oscar/smart-city-project.git
@@ -41,7 +59,16 @@ cd ..
 docker compose up -d
 
 # 4. Esperar ~30 segundos para que Kafka y Airflow inicialicen
-# Verificar estado
+
+# 5. Crear Kafka Topics manualmente
+docker exec kafka kafka-topics --create --bootstrap-server localhost:9092 --topic events.standardized --partitions 3 --replication-factor 1
+docker exec kafka kafka-topics --create --bootstrap-server localhost:9092 --topic correlated.alerts --partitions 2 --replication-factor 1
+docker exec kafka kafka-topics --create --bootstrap-server localhost:9092 --topic events.dlq --partitions 1 --replication-factor 1
+
+# 6. Crear Kibana Data Views automáticamente
+.\scripts\init-kibana-dataviews.ps1
+
+# 7. Verificar estado
 docker ps
 ```
 
