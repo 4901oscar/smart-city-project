@@ -54,6 +54,13 @@ services:
       ASPNETCORE_ENVIRONMENT: Development
       ConnectionStrings__DefaultConnection: "Host=${PGHOST};Database=${PGDATABASE};Username=${PGUSER};Password=${PGPASSWORD};SSL Mode=Require;Timeout=15;Command Timeout=30"
       Kafka__BootstrapServers: kafka:29092
+      Email__SmtpHost: ${EMAIL_SMTP_HOST}
+      Email__SmtpPort: ${EMAIL_SMTP_PORT}
+      Email__FromEmail: ${EMAIL_FROM}
+      Email__FromName: "Smart City Alert System"
+      Email__Username: ${EMAIL_USERNAME}
+      Email__Password: ${EMAIL_PASSWORD}
+      Email__AlertRecipient: ${EMAIL_ALERT_RECIPIENT}
     restart: always
   
   # Elasticsearch - Motor de búsqueda y análisis

@@ -31,7 +31,7 @@ public class EventDbContext : DbContext
             entity.Property(e => e.TsUtc).HasColumnName("ts_utc").IsRequired();
             entity.Property(e => e.Zone).HasColumnName("zone");
             entity.Property(e => e.GeoLat).HasColumnName("geo_lat").HasColumnType("numeric");
-            entity.Property(e => e.GeoLon).HasColumnName("geo_long").HasColumnType("numeric");
+            entity.Property(e => e.GeoLon).HasColumnName("geo_lon").HasColumnType("numeric");
             entity.Property(e => e.Severity).HasColumnName("severity");
             entity.Property(e => e.Payload).HasColumnName("payload").HasColumnType("jsonb").IsRequired();
             
@@ -104,7 +104,7 @@ public class Event
     [Column("geo_lat")]
     public decimal? GeoLat { get; set; }
 
-    [Column("geo_long")]
+    [Column("geo_lon")]
     public decimal? GeoLon { get; set; }
 
     [Column("severity")]
@@ -120,10 +120,10 @@ public class Alert
 {
     [Key]
     [Column("alert_id")]
-    public string AlertId { get; set; } = string.Empty;
+    public Guid AlertId { get; set; }
 
     [Column("correlation_id")]
-    public string? CorrelationId { get; set; }
+    public Guid? CorrelationId { get; set; }
 
     [Required]
     [Column("type")]

@@ -8,12 +8,12 @@ const BACKEND_URL = process.env.BACKEND_URL || 'http://localhost:5000';
 const ELASTICSEARCH_URL = process.env.ELASTICSEARCH_URL || 'http://localhost:9200';
 const POLL_INTERVAL_MS = 5000; // Verificar cada 5 segundos
 
-// Configuración de PostgreSQL (Azure)
+// Configuración de PostgreSQL (Neon Cloud)
 const pgConfig = {
-  host: process.env.PGHOST || 'arqui-pg.postgres.database.azure.com',
-  database: process.env.PGDATABASE || 'test_events',
-  user: process.env.PGUSER || 'grupo2',
-  password: process.env.PGPASSWORD || '4rqu1.4pp',
+  host: process.env.PGHOST || 'ep-solitary-waterfall-adymysgs-pooler.c-2.us-east-1.aws.neon.tech',
+  database: process.env.PGDATABASE || 'SmartCitiesBD',
+  user: process.env.PGUSER || 'neondb_owner',
+  password: process.env.PGPASSWORD || 'npg_c1UK0FbwvrER',
   port: 5432,
   ssl: {
     rejectUnauthorized: false
@@ -322,13 +322,13 @@ async function processEventsFromDB() {
           timestamp: row.ts_utc, // Alias para compatibilidad
           zone: row.zone,
           geo_lat: row.geo_lat,
-          geo_lon: row.geo_lon,
+          geo_lon: row.geo_lon, // Neon usa geo_lon
           severity: row.severity,
           payload: row.payload,
           geo: { // Construir objeto geo para compatibilidad
             zone: row.zone,
             lat: row.geo_lat,
-            lon: row.geo_lon
+            lon: row.geo_lon // Neon usa geo_lon
           }
         };
 

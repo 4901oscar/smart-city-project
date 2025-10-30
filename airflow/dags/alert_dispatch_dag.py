@@ -52,6 +52,14 @@ def classify_alert(alert_data):
 def dispatch_to_entity(entity, alert_data):
     """Despacha una alerta a una entidad específica"""
     try:
+        # Extraer coordenadas del campo evidence (JSON string)
+        evidence = alert_data.get("evidence", {})
+        if isinstance(evidence, str):
+            import json
+            evidence = json.loads(evidence)
+        
+        coordinates = evidence.get("coordinates", {})
+        
         # Transformar el formato de la alerta para el endpoint de dispatch
         dispatch_payload = {
             "alert_id": alert_data.get("alertId"),
@@ -60,7 +68,9 @@ def dispatch_to_entity(entity, alert_data):
             "score": alert_data.get("score"),
             "zone": alert_data.get("zone"),
             "window_start": alert_data.get("windowStart"),
-            "details": alert_data.get("details", {})
+            "geo_lat": coordinates.get("lat"),
+            "geo_lon": coordinates.get("lon"),
+            "details": evidence
         }
         
         url = f"{BACKEND_URL}/dispatch/{entity}"

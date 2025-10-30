@@ -31,8 +31,12 @@ public class AlertsController : ControllerBase
             var alertData = JObject.Parse(json);
 
             // Extraer datos de la alerta
-            var alertId = alertData["alert_id"]?.ToString() ?? Guid.NewGuid().ToString();
-            var correlationId = alertData["correlation_id"]?.ToString();
+            var alertId = Guid.TryParse(alertData["alert_id"]?.ToString(), out var parsedAlertId) 
+                ? parsedAlertId 
+                : Guid.NewGuid();
+            var correlationId = Guid.TryParse(alertData["correlation_id"]?.ToString(), out var parsedCorrelationId) 
+                ? (Guid?)parsedCorrelationId 
+                : null;
             
             var sourceEventId = alertData["source_event_id"]?.ToString();
             var eventType = alertData["event_type"]?.ToString();
@@ -40,6 +44,11 @@ public class AlertsController : ControllerBase
             var timestamp = DateTime.TryParse(alertData["timestamp"]?.ToString(), out var ts) 
                 ? DateTime.SpecifyKind(ts, DateTimeKind.Utc) 
                 : DateTime.UtcNow;
+
+            // Extraer coordenadas del objeto coordinates
+            var coordinates = alertData["coordinates"] as JObject;
+            var geoLat = coordinates?["lat"]?.Value<double>();
+            var geoLon = coordinates?["lon"]?.Value<double>();
 
             // Obtener alertas del array
             var alertsArray = alertData["alerts"] as JArray ?? new JArray();
@@ -68,7 +77,7 @@ public class AlertsController : ControllerBase
                     _ => 0m
                 };
 
-                // Construir evidencia JSONB
+                // Construir evidencia JSONB con coordenadas
                 var evidence = new JObject
                 {
                     ["source_event_id"] = sourceEventId,
@@ -76,13 +85,18 @@ public class AlertsController : ControllerBase
                     ["level"] = level,
                     ["message"] = message,
                     ["details"] = details,
-                    ["timestamp"] = timestamp.ToString("o")
+                    ["timestamp"] = timestamp.ToString("o"),
+                    ["coordinates"] = new JObject
+                    {
+                        ["lat"] = geoLat,
+                        ["lon"] = geoLon
+                    }
                 };
 
                 // Crear modelo de alerta
                 var alert = new Alert
                 {
-                    AlertId = Guid.NewGuid().ToString(), // Generar nuevo ID para cada alerta del array
+                    AlertId = Guid.NewGuid(), // Generar nuevo ID para cada alerta del array
                     CorrelationId = correlationId,
                     Type = type ?? "UNKNOWN",
                     Score = score,
@@ -145,6 +159,7 @@ public class AlertsController : ControllerBase
                     a.Zone,
                     a.WindowStart,
                     a.WindowEnd,
+                    a.Evidence,
                     a.CreatedAt
                 })
                 .ToListAsync();
